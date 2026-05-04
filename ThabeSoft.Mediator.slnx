@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="Test.Console/Test.Console.csproj" Id="c2895607-c41b-4540-bf02-9a29789540fa" />
   <Project Path="Test/Test.csproj" />
   <Project Path="ThabeSoft.Mediator.Abstractions/ThabeSoft.Mediator.Abstractions.csproj" />
   <Project Path="ThabeSoft.Mediator.Contracts/ThabeSoft.Mediator.Contracts.csproj" />

@@ -57,13 +57,19 @@ namespace {{Namespace}}
 {
     internal sealed class {{warpperName}}(IServiceProvider services) : ICommandHandlerWarpper
     {
+        private ICommandHandler<{{messageTypeFullName}}> handler;
+
         public Type MessageType { get; } = typeof({{messageTypeFullName}});
 
         public async Task HandleAsync(ICommand command, CancellationToken cancellationToken = default)
         {
             if (command is not {{messageTypeFullName}} c) throw new NotSupportedException();
 
-            var handler = services.GetRequiredService<ICommandHandler<{{messageTypeFullName}}>>();
+            if (handler is null)
+            {
+                handler = services.GetRequiredService<ICommandHandler<{{messageTypeFullName}}>>();
+            }
+
             await handler.HandleAsync(c, cancellationToken);
         }
     }
@@ -81,14 +87,20 @@ namespace {{Namespace}}
 {
     internal sealed class {{warpperName}}(IServiceProvider services) : IResponseCommandHandlerWarpper
     {
+        private ICommandHandler<{{messageTypeFullName}}, {{responseTypeName}}> handler;
+
         public Type MessageType { get; } = typeof({{messageTypeFullName}});
 
         public async Task<TResult> HandleAsync<TResult>(ICommand<TResult> command, CancellationToken cancellationToken = default)
         {
-            if (typeof({{responseTypeName}}) != typeof(TResult)) throw new NotSupportedException();
             if (command is not {{messageTypeFullName}} c) throw new NotSupportedException();
 
-            var handler = services.GetRequiredService<ICommandHandler<{{messageTypeFullName}}, {{responseTypeName}}>>();
+            if(handler is null) 
+            {
+                if (typeof({{responseTypeName}}) != typeof(TResult)) throw new NotSupportedException();
+                handler = services.GetRequiredService<ICommandHandler<{{messageTypeFullName}}, {{responseTypeName}}>>();
+            }
+         
             if (await handler.HandleAsync(c, cancellationToken) is TResult result) return result;
             throw new InvalidOperationException("类型匹配已通过，不应执行此处");
         }
@@ -107,14 +119,20 @@ namespace {{Namespace}}
 {
     internal sealed class {{warpperName}}(IServiceProvider services) : IQueryHandlerWarpper
     {
+        private IQueryHandler<{{messageTypeFullName}}, {{responseTypeName}}> handler;
+
         public Type MessageType { get; } = typeof({{messageTypeFullName}});
 
         public async Task<TResult> HandleAsync<TResult>(IQuery<TResult> query, CancellationToken cancellationToken = default)
         {
-            if (typeof({{responseTypeName}}) != typeof(TResult)) throw new NotSupportedException();
             if (query is not {{messageTypeFullName}} q) throw new NotSupportedException();
 
-            var handler = services.GetRequiredService<IQueryHandler<{{messageTypeFullName}}, {{responseTypeName}}>>();
+            if (handler is null)
+            {
+                if (typeof({{responseTypeName}}) != typeof(TResult)) throw new NotSupportedException();
+                handler = services.GetRequiredService<IQueryHandler<{{messageTypeFullName}}, {{responseTypeName}}>>();
+            }
+            
             if (await handler.HandleAsync(q, cancellationToken) is TResult result) return result;
             throw new InvalidOperationException("类型匹配已通过，不应执行此处");
         }
@@ -133,13 +151,19 @@ namespace {{Namespace}}
 {
     internal sealed class {{warpperName}}(IServiceProvider services) : IEventHandlerWarpper
     {
+        private IEventHandler<{{messageTypeFullName}}> handler;
+
         public Type MessageType { get; } = typeof({{messageTypeFullName}});
 
         public async Task HandleAsync(IEvent @event, CancellationToken cancellationToken = default)
         {
             if (@event is not {{messageTypeFullName}} e) throw new NotSupportedException();
 
-            var handler = services.GetRequiredService<IEventHandler<{{messageTypeFullName}}>>();
+            if(handler is null)
+            {
+                handler = services.GetRequiredService<IEventHandler<{{messageTypeFullName}}>>();
+            }
+
             await handler.HandleAsync(e, cancellationToken);
         }
     }
