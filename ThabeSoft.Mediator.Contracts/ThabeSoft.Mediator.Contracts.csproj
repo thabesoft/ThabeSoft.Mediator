@@ -3,6 +3,8 @@
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<RootNamespace>ThabeSoft.Mediator</RootNamespace>
+		<Company>ThabeSoft</Company>
+		<Product>Mediator</Product>
 	</PropertyGroup>
 
 </Project>

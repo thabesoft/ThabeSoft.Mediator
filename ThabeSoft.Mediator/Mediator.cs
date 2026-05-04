@@ -1,44 +1,81 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.DependencyInjection;
+using ThabeSoft.Mediator.Warppers;
+
+namespace ThabeSoft.Mediator;
 
 
-namespace ThabeSoft.Mediator
+internal sealed class Mediator(IServiceProvider services) : IMediator
 {
-    internal sealed class Mediator : IMediator
+    // 每种命令对应的处理器
+    private readonly Dictionary<Type, ICommandHandlerWarpper> _nonResultCommandHandlerWarppers =
+        services.GetServices<ICommandHandlerWarpper>()
+        .ToDictionary(x => x.MessageType);
+
+    // 每种结果命令对应的处理器
+    private readonly Dictionary<Type, IResponseCommandHandlerWarpper> _resultCommandHandlerWarppers =
+        services.GetServices<IResponseCommandHandlerWarpper>()
+        .ToDictionary(x => x.MessageType);
+
+    // 每种请求对应的处理器
+    private readonly Dictionary<Type, IQueryHandlerWarpper> _queryHandlerWarppers =
+        services.GetServices<IQueryHandlerWarpper>()
+        .ToDictionary(x => x.MessageType);
+
+    // 每种事件对应的处理器
+    private readonly Dictionary<Type, IEventHandlerWarpper[]> _eventHandlerWarppers =
+        services.GetServices<IEventHandlerWarpper>()
+        .GroupBy(x => x.MessageType)
+        .ToDictionary(x => x.First().MessageType, v => v.ToArray());
+
+
+    public async Task SendAsync(ICommand command, CancellationToken cancellationToken)
     {
-        private readonly IEventDispatcher _eventDispatcher;
-        private readonly ICommandDispatcher _commandDispatcher;
-        private readonly IQueryDispatcher _queryDispatcher;
+        var message_type = command.GetType();
 
-        public Mediator(
-            IEventDispatcher eventDispatcher,
-            ICommandDispatcher commandDispatcher,
-            IQueryDispatcher queryDispatcher
-        )
+        if (!_nonResultCommandHandlerWarppers.TryGetValue(message_type, out var warpper))
         {
-            _eventDispatcher = eventDispatcher;
-            _commandDispatcher = commandDispatcher;
-            _queryDispatcher = queryDispatcher;
+            throw new NotSupportedException("");
         }
 
-        public async Task SendAsync(ICommand command, CancellationToken cancellationToken)
+        await warpper.HandleAsync(command, cancellationToken);
+    }
+
+    public async Task<TResult> SendAsync<TResult>(ICommand<TResult> command, CancellationToken cancellationToken)
+    {
+        var message_type = command.GetType();
+
+        if (!_resultCommandHandlerWarppers.TryGetValue(message_type, out var warpper))
         {
-            await _commandDispatcher.DispatchAsync(command, cancellationToken);
+            throw new NotSupportedException("");
         }
 
-        public async Task<TResult> SendAsync<TResult>(ICommand<TResult> command, CancellationToken cancellationToken)
+        return await warpper.HandleAsync(command, cancellationToken);
+    }
+
+    public async Task<TResult> QueryAsync<TResult>(IQuery<TResult> query, CancellationToken cancellationToken)
+    {
+        var message_type = query.GetType();
+
+        if (!_queryHandlerWarppers.TryGetValue(message_type, out var warpper))
         {
-            return await _commandDispatcher.DispatchAsync(command, cancellationToken);
+            throw new NotSupportedException();
         }
 
-        public async Task<TResult> QueryAsync<TResult>(IQuery<TResult> query, CancellationToken cancellationToken)
+        return await warpper.HandleAsync(query, cancellationToken);
+    }
+
+    public async Task PublishAsync(IEvent @event, CancellationToken cancellationToken)
+    {
+        var message_type = @event.GetType();
+
+        if (!_eventHandlerWarppers.TryGetValue(message_type, out var warppers))
         {
-            return await _queryDispatcher.DispatchAsync(query, cancellationToken);
+            throw new NotSupportedException();
         }
 
-        public async Task PublishAsync(IEvent @event, CancellationToken cancellationToken)
+        foreach (var warpper in warppers)
         {
-            await _eventDispatcher.DispatchAsync(@event, cancellationToken);
+            await warpper.HandleAsync(@event, cancellationToken);
         }
     }
 }
