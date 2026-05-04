@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="Test/Test.csproj" />
+  <Project Path="ThabeSoft.Mediator.Abstractions/ThabeSoft.Mediator.Abstractions.csproj" />
+  <Project Path="ThabeSoft.Mediator.Contracts/ThabeSoft.Mediator.Contracts.csproj" />
+  <Project Path="ThabeSoft.Mediator.SourceGenerators/ThabeSoft.Mediator.SourceGenerators.csproj" />
+  <Project Path="ThabeSoft.Mediator/ThabeSoft.Mediator.csproj" />
+</Solution>

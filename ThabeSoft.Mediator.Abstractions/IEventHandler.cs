@@ -1,0 +1,16 @@
+﻿using System.Threading;
+using System.Threading.Tasks;
+
+
+namespace ThabeSoft.Mediator
+{
+    /// <summary>
+    /// 事件处理器
+    /// </summary>
+    /// <typeparam name="TEvent"></typeparam>
+    public interface IEventHandler<TEvent>
+        where TEvent : IEvent
+    {
+        Task HandleAsync(TEvent @event, CancellationToken cancellationToken = default);
+    }
+}
