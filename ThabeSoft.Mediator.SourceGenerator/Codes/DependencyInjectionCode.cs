@@ -1,8 +1,10 @@
-﻿namespace ThabeSoft.Mediator.SourceGenerators.Codes;
+﻿namespace ThabeSoft.Mediator.SourceGenerator.Codes;
 
 
 internal static class DependencyInjectionCode
 {
+    public static string Namespace { get; } = "Microsoft.Extensions.DependencyInjection";
+
     public static string[] Usings { get; } =
     [
         "Microsoft.Extensions.DependencyInjection.Extensions",
@@ -19,7 +21,7 @@ internal static class DependencyInjectionCode
 {{UsingCode.FromNamespaces(Usings)}}
 
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace {{Namespace}}
 {
     internal static class ThabeSoftMediatorDependencyInjectionExtensions
     {

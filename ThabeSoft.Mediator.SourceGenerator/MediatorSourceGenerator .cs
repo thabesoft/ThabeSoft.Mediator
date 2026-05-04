@@ -1,14 +1,9 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using ThabeSoft.Mediator.SourceGenerators.Codes;
+using ThabeSoft.Mediator.SourceGenerator.Codes;
 
-namespace ThabeSoft.Mediator.SourceGenerators;
+namespace ThabeSoft.Mediator.SourceGenerator;
 
 
 [Generator]

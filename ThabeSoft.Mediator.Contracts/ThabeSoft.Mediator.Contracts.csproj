@@ -3,6 +3,11 @@
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<RootNamespace>ThabeSoft.Mediator</RootNamespace>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+	</PropertyGroup>
+
+	<!--包信息-->
+	<PropertyGroup>
 		<Company>ThabeSoft</Company>
 		<Product>Mediator</Product>
 	</PropertyGroup>

@@ -1,4 +1,4 @@
-﻿namespace ThabeSoft.Mediator.SourceGenerators;
+﻿namespace ThabeSoft.Mediator.SourceGenerator;
 
 /// <summary>
 /// 处理器类型

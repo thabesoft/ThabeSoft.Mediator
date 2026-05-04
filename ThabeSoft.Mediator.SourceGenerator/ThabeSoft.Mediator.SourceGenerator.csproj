@@ -6,6 +6,14 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<IsRoslynComponent>true</IsRoslynComponent>
 		<EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+	</PropertyGroup>
+
+	<!--包信息-->
+	<PropertyGroup>
+		<IsPackable>false</IsPackable>
+		<Company>ThabeSoft</Company>
+		<Product>Mediator</Product>
 	</PropertyGroup>
 
 	<ItemGroup>

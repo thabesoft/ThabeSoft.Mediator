@@ -1,4 +1,4 @@
-﻿namespace ThabeSoft.Mediator.SourceGenerators.Codes;
+﻿namespace ThabeSoft.Mediator.SourceGenerator.Codes;
 
 internal static class WarpperCode
 {

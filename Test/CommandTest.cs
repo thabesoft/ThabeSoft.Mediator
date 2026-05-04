@@ -12,7 +12,7 @@ public sealed class CommandTest
     {
         ServiceCollection descriptors = new();
         descriptors.AddMediator();
-        //descriptors.AddMediator();
+        descriptors.AddMediatorHandlers();
 
         var services = descriptors.BuildServiceProvider();
         var mediator = services.GetRequiredService<IMediator>();
