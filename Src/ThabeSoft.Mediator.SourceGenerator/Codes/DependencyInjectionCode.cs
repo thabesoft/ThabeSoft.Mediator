@@ -17,7 +17,9 @@ internal static class DependencyInjectionCode
         var event_handlers_register_code = string.Join("\n\n", handlers.Select(GenerateInjectionCode));
 
         string code = $$"""
-{{UsingCode.FromNamespaces(Usings)}}
+{{GeneratorHelper.GenerateFileHead()}}
+
+{{GeneratorHelper.GenerateUsingCode(Usings)}}
 
 
 namespace {{Namespace}}
@@ -27,9 +29,10 @@ namespace {{Namespace}}
         public static void AddMediatorHandlers(this IServiceCollection services, Action<HandlerDescriptorCollection>? optionAction = null)
         {
             var handler_descriptors = new HandlerDescriptorCollection();
-            optionAction?.Invoke(handler_descriptors);
 
 {{event_handlers_register_code}}
+
+            optionAction?.Invoke(handler_descriptors);
 
             var service_descriptors = handler_descriptors.BuildToServiceDescriptors();
             foreach (var service_descriptor in service_descriptors) services.TryAddEnumerable(service_descriptor);

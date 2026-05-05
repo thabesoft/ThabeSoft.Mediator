@@ -16,7 +16,9 @@ internal static class MediatorExtensionsCode
         var event_handlers_register_code = string.Join("\n\n", handlers.Select(GenerateInjectionCode));
 
         string code = $$"""
-{{UsingCode.FromNamespaces(Usings)}}
+{{GeneratorHelper.GenerateFileHead()}}
+
+{{GeneratorHelper.GenerateUsingCode(Usings)}}
 
 
 namespace {{Namespace}}
