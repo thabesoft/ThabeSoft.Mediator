@@ -1,11 +1,6 @@
-﻿using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Jobs;
-using MediatR;
-using Microsoft.CodeAnalysis;
+﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using System.Diagnostics;
 using Test.Commands;
-using ThabeSoft.Mediator;
 
 using MediatorMediator = MediatR.IMediator;
 using ThabeSoftMediator = ThabeSoft.Mediator.IMediator;
@@ -51,7 +46,7 @@ public class MediatorComparisonTests
     [TestMethod]
     public async Task Throughput_YourMediator_vs_MediatR()
     {
-        const int durationSeconds = 3;
+        const int durationSeconds = 20;
 
         // --- 测试 ThabeSoft.Mediator ---
         var yourTps = await RunThroughputTest("ThabeSoft.Mediator", true, _myServiceProvider, durationSeconds);

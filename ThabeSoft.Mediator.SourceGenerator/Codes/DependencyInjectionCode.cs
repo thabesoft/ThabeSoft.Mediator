@@ -9,8 +9,8 @@ internal static class DependencyInjectionCode
     [
         "Microsoft.Extensions.DependencyInjection.Extensions",
         "ThabeSoft.Mediator",
-        "ThabeSoft.Mediator.Warppers",
-        WarpperCode.Namespace
+        //"ThabeSoft.Mediator.Warppers",
+        //WarpperCode.Namespace
     ];
 
     public static string FromHandlerInfos(List<HandlerInfo> handlers)
@@ -38,14 +38,12 @@ namespace {{Namespace}}
 
     private static string GenerateInjectionCode(HandlerInfo info)
     {
-        string warpper_full_name = WarpperCode.CreateWarpperClassName(info);
-
         if (info.Kind == HandlerKind.Command && info.ReturnTypeFullName is null)
         {
-            return $"""
+            return $$"""
             // {info.HandlerTypeFullName}
             services.TryAddEnumerable(ServiceDescriptor.Scoped<ICommandHandler<{info.MessageTypeFullName}>, {info.HandlerTypeFullName}>());
-            services.TryAddEnumerable(ServiceDescriptor.Scoped<ICommandHandlerWarpper, {warpper_full_name}>());
+            services.AddMediatorCommandHandler<{info.MessageTypeFullName}>();
 """;
         }
         if (info.Kind == HandlerKind.Command && info.ReturnTypeFullName is not null)
@@ -53,7 +51,7 @@ namespace {{Namespace}}
             return $"""
             // {info.HandlerTypeFullName}
             services.TryAddEnumerable(ServiceDescriptor.Scoped<ICommandHandler<{info.MessageTypeFullName}, {info.ReturnTypeFullName}>, {info.HandlerTypeFullName}>());
-            services.TryAddEnumerable(ServiceDescriptor.Scoped<IResponseCommandHandlerWarpper, {warpper_full_name}>());
+            services.AddMediatorCommandHandler<{info.MessageTypeFullName}, {info.ReturnTypeFullName}>();
 """;
         }
         if (info.Kind == HandlerKind.Query && info.ReturnTypeFullName is not null)
@@ -61,14 +59,14 @@ namespace {{Namespace}}
             return $"""
             // {info.HandlerTypeFullName}
             services.TryAddEnumerable(ServiceDescriptor.Scoped<IQueryHandler<{info.MessageTypeFullName}, {info.ReturnTypeFullName}>, {info.HandlerTypeFullName}>());
-            services.TryAddEnumerable(ServiceDescriptor.Scoped<IQueryHandlerWarpper, {warpper_full_name}>());
+            services.AddMediatorQueryHandler<{info.MessageTypeFullName}, {info.ReturnTypeFullName}>();
 """;
         }
 
         return $"""
             // {info.HandlerTypeFullName}
             services.TryAddEnumerable(ServiceDescriptor.Scoped<IEventHandler<{info.MessageTypeFullName}>, {info.HandlerTypeFullName}>());
-            services.TryAddEnumerable(ServiceDescriptor.Scoped<IEventHandlerWarpper, {warpper_full_name}>());
+            services.AddMediatorEventHandler<{info.MessageTypeFullName}>();
 """;
     }
 }

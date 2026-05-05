@@ -120,10 +120,10 @@ public sealed class MediatorSourceGenerator : IIncrementalGenerator
         var valid_handlers = handlerList.Where(x => x != HandlerInfo.Empty).ToList();
         if (valid_handlers.Count == 0) return;
 
-        foreach (var i in handlerList)
-        {
-            context.AddSource($"{i.HandlerTypeFullName}.g.cs", WarpperCode.FromHandlerInfo(i));
-        }
+        //foreach (var i in handlerList)
+        //{
+        //    context.AddSource($"{i.HandlerTypeFullName}.g.cs", WarpperCode.FromHandlerInfo(i));
+        //}
 
 
         context.AddSource("DependencyInjectionExtensions.g.cs", DependencyInjectionCode.FromHandlerInfos(valid_handlers));
