@@ -37,7 +37,7 @@ namespace {{Namespace}}
         {
             return $$"""
         // {{info.MessageTypeFullName}}
-        public static Task<{{info.ReturnTypeFullName}}> SendAsync(this IMediator mediator, {{info.MessageTypeFullName}} command, CancellationToken cancellationToken = default)
+        public static ValueTask<{{info.ReturnTypeFullName}}> SendAsync(this IMediator mediator, {{info.MessageTypeFullName}} command, CancellationToken cancellationToken = default)
         {
             return mediator.SendAsync<{{info.MessageTypeFullName}}, {{info.ReturnTypeFullName}}>(command, cancellationToken);
         }
@@ -47,7 +47,7 @@ namespace {{Namespace}}
         {
             return $$"""
         // {{info.MessageTypeFullName}}
-        public static Task<{{info.ReturnTypeFullName}}> QueryAsync(this IMediator mediator, {{info.MessageTypeFullName}} query, CancellationToken cancellationToken = default)
+        public static ValueTask<{{info.ReturnTypeFullName}}> QueryAsync(this IMediator mediator, {{info.MessageTypeFullName}} query, CancellationToken cancellationToken = default)
         {
             return mediator.QueryAsync<{{info.MessageTypeFullName}}, {{info.ReturnTypeFullName}}>(query, cancellationToken);
         }

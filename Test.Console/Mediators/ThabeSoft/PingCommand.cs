@@ -1,8 +1,14 @@
 ﻿using ThabeSoft.Mediator;
 
-namespace Test.Commands;
+namespace Test.Console.Mediators.ThabeSoft;
 
-// 实现处理器
+
+public readonly record struct PingCommand : ICommand<PongResponse>;
+
+public readonly record struct PongResponse(string Message);
+
+
+
 public class PingCommandHandler : ICommandHandler<PingCommand, PongResponse>
 {
     public ValueTask<PongResponse> HandleAsync(PingCommand command, CancellationToken ct)

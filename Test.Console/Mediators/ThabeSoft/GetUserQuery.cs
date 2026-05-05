@@ -1,6 +1,12 @@
 ﻿using ThabeSoft.Mediator;
 
-namespace Test.Queries;
+namespace Test.Console.Mediators.ThabeSoft;
+
+
+public record GetUserQuery(int Id) : IQuery<UserDto>;
+
+public record UserDto(int Id, string Name);
+
 
 public class GetUserQueryHandler : IQueryHandler<GetUserQuery, UserDto>
 {

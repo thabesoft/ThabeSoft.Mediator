@@ -1,33 +1,45 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using System.Buffers;
 using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
 
 namespace ThabeSoft.Mediator;
 
 
 internal sealed class Mediator(IServiceProvider services) : IMediator
 {
-    public async Task SendAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default) where TCommand : ICommand
+    public ValueTask SendAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default) where TCommand : ICommand
     {
-        await CommandHandlerSlot<TCommand>.Handler.Invoke(services, command, cancellationToken);
+        return CommandHandlerSlot<TCommand>.Handler.Invoke(services, command, cancellationToken);
     }
-    public async Task<TResult> SendAsync<TCommand, TResult>(TCommand command, CancellationToken cancellationToken = default) where TCommand : ICommand<TResult>
+    public ValueTask<TResult> SendAsync<TCommand, TResult>(TCommand command, CancellationToken cancellationToken = default) where TCommand : ICommand<TResult>
     {
-        return await CommandHandlerSlot<TCommand, TResult>.Handler.Invoke(services, command, cancellationToken);
+        return CommandHandlerSlot<TCommand, TResult>.Handler.Invoke(services, command, cancellationToken);
     }
-    public async Task<TResult> QueryAsync<TQuery, TResult>(TQuery query, CancellationToken cancellationToken = default) where TQuery : IQuery<TResult>
+    public ValueTask<TResult> QueryAsync<TQuery, TResult>(TQuery query, CancellationToken cancellationToken = default) where TQuery : IQuery<TResult>
     {
-        return await QueryHandlerSlot<TQuery, TResult>.Handler.Invoke(services, query, cancellationToken);
+        return QueryHandlerSlot<TQuery, TResult>.Handler.Invoke(services, query, cancellationToken);
     }
-    public async Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default) where TEvent : IEvent
+    public ValueTask PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default) where TEvent : IEvent
     {
-        await Task.WhenAll(EventHandlerSlot<TEvent>.GetHandlers(services).Select(x => x.Invoke(@event, cancellationToken)));
+        var handlers = EventHandlerSlot<TEvent>.GetHandlers(services);
+        var handler_length = handlers.Length;
+
+        if (handler_length <= 0) return default;
+        if (handler_length == 1) return handlers[0].Invoke(@event, cancellationToken);
+
+        var tasks = new Task[handler_length];
+        for (int i = 0; i < handler_length; i++)
+            tasks[i] = handlers[i].Invoke(@event, cancellationToken).AsTask();
+
+        return new ValueTask(Task.WhenAll(tasks));
     }
 }
 
 
 internal static class CommandHandlerSlot<TCommand> where TCommand : ICommand
 {
-    public delegate Task Delegate(IServiceProvider services, TCommand command, CancellationToken cancellationToken);
+    public delegate ValueTask Delegate(IServiceProvider services, TCommand command, CancellationToken cancellationToken);
 
     public static Delegate Handler = async (services, command, ct) =>
     {
@@ -38,7 +50,7 @@ internal static class CommandHandlerSlot<TCommand> where TCommand : ICommand
 
 internal static class CommandHandlerSlot<TCommand, TResult> where TCommand : ICommand<TResult>
 {
-    public delegate Task<TResult> Delegate(IServiceProvider services, TCommand command, CancellationToken cancellationToken);
+    public delegate ValueTask<TResult> Delegate(IServiceProvider services, TCommand command, CancellationToken cancellationToken);
 
     public static Delegate Handler = async (services, command, ct) =>
     {
@@ -49,7 +61,7 @@ internal static class CommandHandlerSlot<TCommand, TResult> where TCommand : ICo
 
 internal static class QueryHandlerSlot<TQuery, TResult> where TQuery : IQuery<TResult>
 {
-    public delegate Task<TResult> Delegate(IServiceProvider services, TQuery query, CancellationToken cancellationToken);
+    public delegate ValueTask<TResult> Delegate(IServiceProvider services, TQuery query, CancellationToken cancellationToken);
 
     public static Delegate Handler = async (services, command, ct) =>
     {
@@ -60,20 +72,19 @@ internal static class QueryHandlerSlot<TQuery, TResult> where TQuery : IQuery<TR
 
 internal static class EventHandlerSlot<TEvent> where TEvent : IEvent
 {
-    private static readonly ConcurrentDictionary<IServiceProvider, IReadOnlyCollection<Delegate>> _handlerMap = [];
+    private static readonly ConditionalWeakTable<IServiceProvider, Delegate[]> _handlerMap = new();
 
 
-    public delegate Task Delegate(TEvent @event, CancellationToken cancellationToken);
+    public delegate ValueTask Delegate(TEvent @event, CancellationToken cancellationToken);
 
-    public static IReadOnlyCollection<Delegate> GetHandlers(IServiceProvider services)
+    public static Delegate[] GetHandlers(IServiceProvider services)
     {
-        return _handlerMap.GetOrAdd(services, x =>
-        {
-            return [.. services
-                .GetServices<IEventHandler<TEvent>>()
-                .Select(handler => new Delegate(
-                    (@event, ct) => handler.HandleAsync(@event, ct))
-            )];
-        });
+        if (_handlerMap.TryGetValue(services, out var handlers))
+            return handlers;
+
+        handlers = [.. services.GetServices<IEventHandler<TEvent>>().Select(handler => new Delegate(handler.HandleAsync))];
+        _handlerMap.Add(services, handlers);
+
+        return handlers;
     }
 }

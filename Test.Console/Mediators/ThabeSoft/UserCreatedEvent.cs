@@ -1,12 +1,15 @@
 ﻿using ThabeSoft.Mediator;
 
-namespace Test.Events;
+namespace Test.Console.Mediators.ThabeSoft;
+
+
+public record UserCreatedEvent(int UserId, string Name) : IEvent;
+
 
 public class UserCreatedEventHandler : IEventHandler<UserCreatedEvent>
 {
     public ValueTask HandleAsync(UserCreatedEvent @event, CancellationToken ct)
     {
-        Console.WriteLine($"User created: {@event.Name}");
         return ValueTask.CompletedTask;
     }
 }

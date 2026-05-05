@@ -1,5 +1,5 @@
 ﻿using ThabeSoft.Mediator;
 
-namespace Test.Console.Commands;
+namespace Test.Console.Mediators.ThabeSoft;
 
 public record UnregisteredCommand : ICommand;

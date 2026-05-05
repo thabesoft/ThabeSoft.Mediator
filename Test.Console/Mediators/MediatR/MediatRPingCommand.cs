@@ -1,6 +1,11 @@
 ﻿using MediatR;
 
-namespace Test.Console.Commands;
+namespace Test.Console.Mediators.MediatR;
+
+public readonly record struct MediatRPingCommand : IRequest<MediatRPongResponse> { }
+public readonly record struct MediatRPongResponse(string Message);
+
+
 
 public class MediatRPingCommandHandler : IRequestHandler<MediatRPingCommand, MediatRPongResponse>
 {

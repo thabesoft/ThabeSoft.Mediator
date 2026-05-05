@@ -21,7 +21,7 @@ public class StressTests : TestBase
         // 并发执行 10000 个命令
         for (int i = 0; i < 10000; i++)
         {
-            tasks.Add(Mediator.SendAsync(new PingCommand(), TestContext.CancellationToken));
+            tasks.Add(Mediator.SendAsync(new PingCommand(), TestContext.CancellationToken).AsTask());
         }
 
         var results = await Task.WhenAll(tasks);
@@ -233,7 +233,7 @@ public class StressTests : TestBase
         var conStopwatch = Stopwatch.StartNew();
         for (int i = 0; i < totalRequests; i++)
         {
-            tasks.Add(Mediator.SendAsync(new PingCommand(), TestContext.CancellationToken));
+            tasks.Add(Mediator.SendAsync(new PingCommand(), TestContext.CancellationToken).AsTask());
         }
         await Task.WhenAll(tasks);
         conStopwatch.Stop();
