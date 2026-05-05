@@ -20,11 +20,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\ThabeSoft.Mediator.Abstractions\ThabeSoft.Mediator.Abstractions.csproj" />
+		<None Include="..\ThabeSoft.Mediator.SourceGenerator\bin\$(Configuration)\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/roslyn4.0/cs" Visible="false" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="..\ThabeSoft.Mediator.SourceGenerator\bin\$(Configuration)\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/roslyn4.0/cs" Visible="false" />
+	  <ProjectReference Include="..\ThabeSoft.Mediator.Abstractions\ThabeSoft.Mediator.Abstractions.csproj" />
 	</ItemGroup>
 
 </Project>

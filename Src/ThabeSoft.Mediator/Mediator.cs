@@ -4,6 +4,10 @@ using System.Runtime.CompilerServices;
 namespace ThabeSoft.Mediator;
 
 
+/// <summary>
+/// 默认实现
+/// </summary>
+/// <param name="services"></param>
 internal sealed class Mediator(IServiceProvider services) : IMediator
 {
     public ValueTask SendAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default) where TCommand : ICommand
