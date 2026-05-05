@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection.Extensions;
-using System.Runtime.CompilerServices;
 using ThabeSoft.Mediator;
 
 
