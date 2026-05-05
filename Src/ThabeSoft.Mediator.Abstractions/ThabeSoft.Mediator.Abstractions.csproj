@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<RootNamespace>ThabeSoft.Mediator</RootNamespace>
+		<LangVersion>preview</LangVersion>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+	</PropertyGroup>
+
+	<!--包信息-->
+	<PropertyGroup>
+		<Company>ThabeSoft</Company>
+		<Product>Mediator</Product>
+		<Version>1.0.0</Version>
+	</PropertyGroup>
+	<ItemGroup>
+	  <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.6.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\ThabeSoft.Mediator.Contracts\ThabeSoft.Mediator.Contracts.csproj" />
+	</ItemGroup>
+
+</Project>

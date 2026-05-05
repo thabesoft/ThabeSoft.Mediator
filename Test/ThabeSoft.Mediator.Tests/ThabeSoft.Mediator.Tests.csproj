@@ -1,0 +1,25 @@
+﻿<Project Sdk="MSTest.Sdk/4.0.2">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<LangVersion>latest</LangVersion>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="11.0.0-preview.3.26207.106" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="11.0.0-preview.3.26207.106" />
+		<PackageReference Update="Microsoft.Testing.Extensions.CodeCoverage" Version="18.6.2" />
+		<PackageReference Update="Microsoft.Testing.Extensions.TrxReport" Version="2.2.2" />
+		<PackageReference Update="MSTest.TestAdapter" Version="4.2.2" />
+		<PackageReference Update="MSTest.TestFramework" Version="4.2.2" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\Src\ThabeSoft.Mediator\ThabeSoft.Mediator.csproj" />
+		<ProjectReference Include="..\..\Src\ThabeSoft.Mediator.SourceGenerator\ThabeSoft.Mediator.SourceGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
+	</ItemGroup>
+
+</Project>

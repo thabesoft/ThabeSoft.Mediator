@@ -1,10 +1,10 @@
 <Solution>
-  <Project Path="Test.Console/Test.Console.csproj" Id="c2895607-c41b-4540-bf02-9a29789540fa">
-    <BuildType Project="Release" />
-  </Project>
-  <Project Path="Test/Test.csproj" />
-  <Project Path="ThabeSoft.Mediator.Abstractions/ThabeSoft.Mediator.Abstractions.csproj" />
-  <Project Path="ThabeSoft.Mediator.Contracts/ThabeSoft.Mediator.Contracts.csproj" />
-  <Project Path="ThabeSoft.Mediator.SourceGenerator/ThabeSoft.Mediator.SourceGenerator.csproj" />
-  <Project Path="ThabeSoft.Mediator/ThabeSoft.Mediator.csproj" />
+  <Folder Name="/Tests/">
+    <Project Path="Test/ThabeSoft.Mediator.Benchmark/ThabeSoft.Mediator.Benchmark.csproj" />
+    <Project Path="Test/ThabeSoft.Mediator.Tests/ThabeSoft.Mediator.Tests.csproj" />
+  </Folder>
+  <Project Path="Src/ThabeSoft.Mediator.Abstractions/ThabeSoft.Mediator.Abstractions.csproj" />
+  <Project Path="Src/ThabeSoft.Mediator.Contracts/ThabeSoft.Mediator.Contracts.csproj" />
+  <Project Path="Src/ThabeSoft.Mediator.SourceGenerator/ThabeSoft.Mediator.SourceGenerator.csproj" />
+  <Project Path="Src/ThabeSoft.Mediator/ThabeSoft.Mediator.csproj" />
 </Solution>
