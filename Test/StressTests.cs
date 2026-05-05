@@ -182,7 +182,7 @@ public class StressTests : TestBase
         Console.WriteLine($"增长率: {increaseRate:P2}");
 
         // 内存增长不应超过 20%
-        Assert.IsGreaterThan(Math.Abs(increaseRate), 0.2, $"内存增长率 {increaseRate:P2} 超过 20%，可能存在内存泄漏");
+        Assert.IsLessThanOrEqualTo(Math.Abs(increaseRate), 0.2, $"内存变化率 {Math.Abs(increaseRate):P1} 超过 20%");
     }
 
     #endregion
@@ -254,7 +254,7 @@ public class StressTests : TestBase
     public async Task ExceptionTest_NotFoundCommand_ThrowsNotSupported()
     {
         // 未注册的命令
-        await Assert.ThrowsExactlyAsync<NotSupportedException>(async () =>
+        await Assert.ThrowsExactlyAsync<InvalidOperationException>(async () =>
         {
             await Mediator.SendAsync(new UnregisteredCommand(), TestContext.CancellationToken);
         });

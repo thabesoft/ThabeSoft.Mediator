@@ -126,6 +126,7 @@ public sealed class MediatorSourceGenerator : IIncrementalGenerator
         //}
 
 
+        context.AddSource("MediatorExtensions.g.cs", MediatorExtensionsCode.FromHandlerInfos(valid_handlers));
         context.AddSource("DependencyInjectionExtensions.g.cs", DependencyInjectionCode.FromHandlerInfos(valid_handlers));
     }
 }

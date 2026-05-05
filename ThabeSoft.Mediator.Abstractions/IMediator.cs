@@ -7,7 +7,7 @@ namespace ThabeSoft.Mediator
     /// <summary>
     /// 中介者
     /// </summary>
-    public interface IMediator
+    public partial interface IMediator
     {
         /// <summary>
         /// 命令
@@ -15,7 +15,7 @@ namespace ThabeSoft.Mediator
         /// <param name="command"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task SendAsync(ICommand command, CancellationToken cancellationToken = default);
+        Task SendAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default) where TCommand : ICommand;
 
         /// <summary>
         /// 命令-响应
@@ -24,7 +24,7 @@ namespace ThabeSoft.Mediator
         /// <param name="event"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<TResult> SendAsync<TResult>(ICommand<TResult> command, CancellationToken cancellationToken = default);
+        Task<TResult> SendAsync<TCommand, TResult>(TCommand command, CancellationToken cancellationToken = default) where TCommand : ICommand<TResult>;
 
         /// <summary>
         /// 查询
@@ -33,7 +33,7 @@ namespace ThabeSoft.Mediator
         /// <param name="query"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<TResult> QueryAsync<TResult>(IQuery<TResult> query, CancellationToken cancellationToken = default);
+        Task<TResult> QueryAsync<TQuery, TResult>(TQuery query, CancellationToken cancellationToken = default) where TQuery : IQuery<TResult>;
 
         /// <summary>
         /// 事件
@@ -41,6 +41,6 @@ namespace ThabeSoft.Mediator
         /// <param name="event"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task PublishAsync(IEvent @event, CancellationToken cancellationToken = default);
+        Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default) where TEvent : IEvent;
     }
 }

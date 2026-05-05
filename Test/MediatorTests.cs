@@ -1,6 +1,7 @@
 ﻿using Test.Commands;
 using Test.Events;
 using Test.Queries;
+using ThabeSoft.Mediator;
 
 namespace Test;
 

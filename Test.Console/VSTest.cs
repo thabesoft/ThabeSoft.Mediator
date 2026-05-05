@@ -2,6 +2,8 @@
 using BenchmarkDotNet.Jobs;
 using Microsoft.Extensions.DependencyInjection;
 using Test.Console.Commands;
+using ThabeSoft.Mediator;
+
 using MediatorMediator = MediatR.IMediator;
 using ThabeSoftMediator = ThabeSoft.Mediator.IMediator;
 

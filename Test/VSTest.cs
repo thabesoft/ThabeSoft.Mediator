@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using ThabeSoft.Mediator;
 using Test.Commands;
 
 using MediatorMediator = MediatR.IMediator;
