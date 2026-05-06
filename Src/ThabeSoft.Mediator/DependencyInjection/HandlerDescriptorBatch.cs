@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System.Linq.Expressions;
 
 namespace ThabeSoft.Mediator.DependencyInjection;
 
@@ -9,15 +8,12 @@ namespace ThabeSoft.Mediator.DependencyInjection;
 /// </summary>
 /// <param name="root"></param>
 /// <param name="matcher"></param>
-#if DEBUG
-public class HandlerDescriptorBatch(IHandlerDescriptorCollection root, Expression<Func<HandlerDescriptor, bool>> matcher) : IHandlerDescriptorBatch
-{
-    private readonly Expression<Func<HandlerDescriptor, bool>> _matcher = matcher;
-#else
-public class HandlerDescriptorBatch(IHandlerDescriptorCollection root, Func<HandlerDescriptor, bool> matcher) : IHandlerDescriptorBatch
+public class HandlerDescriptorBatch(
+    IHandlerDescriptorCollection root,
+    Func<HandlerDescriptor, bool> matcher
+    ) : IHandlerDescriptorBatch
 {
     private readonly Func<HandlerDescriptor, bool> _matcher = matcher;
-#endif
 
     public IHandlerDescriptorBatch SetLifetime(ServiceLifetime lifetime)
     {
@@ -27,7 +23,7 @@ public class HandlerDescriptorBatch(IHandlerDescriptorCollection root, Func<Hand
 
     public IHandlerDescriptorBatch Except()
     {
-        root.Except(_matcher);
+        root.ExceptAll(_matcher);
         return this;
     }
 
@@ -35,11 +31,4 @@ public class HandlerDescriptorBatch(IHandlerDescriptorCollection root, Func<Hand
     {
         return root;
     }
-
-#if DEBUG
-    public override string ToString()
-    {
-        return _matcher.ToString();
-    }
-#endif
 }

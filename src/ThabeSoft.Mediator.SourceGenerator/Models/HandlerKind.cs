@@ -1,10 +1,9 @@
-﻿namespace ThabeSoft.Mediator.DependencyInjection;
-
+﻿namespace ThabeSoft.Mediator.SourceGenerator.Models;
 
 /// <summary>
 /// 处理器类型
 /// </summary>
-public enum HandlerKind
+internal enum HandlerKind
 {
     /// <summary>
     /// 请求

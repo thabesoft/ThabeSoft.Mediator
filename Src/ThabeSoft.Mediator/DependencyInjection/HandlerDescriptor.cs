@@ -29,29 +29,23 @@ public sealed class HandlerDescriptor : IHandlerDescriptor
     }
 
 
-    public static HandlerDescriptor Command<THandler, TCommand>(IHandlerDescriptorCollection root)
-        where THandler : ICommandHandler<TCommand>
-        where TCommand : ICommand
+    public static HandlerDescriptor Request<THandler, TRequest>(IHandlerDescriptorCollection root)
+        where THandler : IRequestHandler<TRequest>
+        where TRequest : IRequest
     {
-        return new HandlerDescriptor(root, typeof(ICommandHandler<TCommand>), typeof(THandler), HandlerKind.Command, typeof(TCommand));
+        return new HandlerDescriptor(root, typeof(IRequestHandler<TRequest>), typeof(THandler), HandlerKind.Request, typeof(TRequest));
     }
-    public static HandlerDescriptor Command<THandler, TCommand, TResult>(IHandlerDescriptorCollection root)
-        where THandler : ICommandHandler<TCommand, TResult>
-        where TCommand : ICommand<TResult>
+    public static HandlerDescriptor Request<THandler, TRequest, TResponse>(IHandlerDescriptorCollection root)
+        where THandler : IRequestHandler<TRequest, TResponse>
+        where TRequest : IRequest<TResponse>
     {
-        return new HandlerDescriptor(root, typeof(ICommandHandler<TCommand, TResult>), typeof(THandler), HandlerKind.CommandWithResult, typeof(TCommand), typeof(TResult));
+        return new HandlerDescriptor(root, typeof(IRequestHandler<TRequest, TResponse>), typeof(THandler), HandlerKind.RequestResponse, typeof(TRequest), typeof(TResponse));
     }
-    public static HandlerDescriptor Query<THandler, TQuery, TResult>(IHandlerDescriptorCollection root)
-        where THandler : IQueryHandler<TQuery, TResult>
-        where TQuery : IQuery<TResult>
+    public static HandlerDescriptor Notification<THandler, TNotification>(IHandlerDescriptorCollection root)
+        where THandler : INotificationHandler<TNotification>
+        where TNotification : INotification
     {
-        return new HandlerDescriptor(root, typeof(IQueryHandler<TQuery, TResult>), typeof(THandler), HandlerKind.Query, typeof(TQuery), typeof(TResult));
-    }
-    public static HandlerDescriptor Event<THandler, TEvent>(IHandlerDescriptorCollection root)
-        where THandler : IEventHandler<TEvent>
-        where TEvent : IEvent
-    {
-        return new HandlerDescriptor(root, typeof(IEventHandler<TEvent>), typeof(THandler), HandlerKind.Event, typeof(TEvent));
+        return new HandlerDescriptor(root, typeof(INotificationHandler<TNotification>), typeof(THandler), HandlerKind.Notification, typeof(TNotification));
     }
 
 
@@ -78,7 +72,7 @@ public sealed class HandlerDescriptor : IHandlerDescriptor
     /// <returns></returns>
     public IHandlerDescriptorCollection Except()
     {
-        _root.Except(x => x == this);
+        _root.ExceptAll(x => x == this);
         return _root;
     }
 

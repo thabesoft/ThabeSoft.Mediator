@@ -1,10 +1,10 @@
 <Solution>
   <Folder Name="/Tests/">
-    <Project Path="Test/ThabeSoft.Mediator.Benchmark/ThabeSoft.Mediator.Benchmark.csproj" />
-    <Project Path="Test/ThabeSoft.Mediator.Tests/ThabeSoft.Mediator.Tests.csproj" />
+    <Project Path="tests/ThabeSoft.Mediator.Benchmark/ThabeSoft.Mediator.Benchmark.csproj" />
+    <Project Path="tests/ThabeSoft.Mediator.IntegrationTests/ThabeSoft.Mediator.IntegrationTests.csproj" />
+    <Project Path="tests/ThabeSoft.Mediator.UnitTests/ThabeSoft.Mediator.UnitTests.csproj" />
   </Folder>
-  <Project Path="Src/ThabeSoft.Mediator.Abstractions/ThabeSoft.Mediator.Abstractions.csproj" />
-  <Project Path="Src/ThabeSoft.Mediator.Contracts/ThabeSoft.Mediator.Contracts.csproj" />
-  <Project Path="Src/ThabeSoft.Mediator.SourceGenerator/ThabeSoft.Mediator.SourceGenerator.csproj" />
-  <Project Path="Src/ThabeSoft.Mediator/ThabeSoft.Mediator.csproj" />
+  <Project Path="src/ThabeSoft.Mediator.Abstractions/ThabeSoft.Mediator.Abstractions.csproj" />
+  <Project Path="src/ThabeSoft.Mediator.SourceGenerator/ThabeSoft.Mediator.SourceGenerator.csproj" />
+  <Project Path="src/ThabeSoft.Mediator/ThabeSoft.Mediator.csproj" />
 </Solution>
