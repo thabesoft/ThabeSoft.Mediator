@@ -26,7 +26,7 @@ internal class DependencyInjectionCodeFileBuilder : CodeFileBuilderBase
         return $$"""
     internal static class ThabeSoftMediatorDependencyInjectionExtensions
     {
-        public static void AddMediatorHandlers(this IServiceCollection services, Action<HandlerDescriptorCollection>? optionAction = null)
+        public static void AddMediatorHandlers(this IServiceCollection services, Action<IHandlerDescriptorCollection>? optionAction = null)
         {
             var handler_descriptors = new HandlerDescriptorCollection();
 

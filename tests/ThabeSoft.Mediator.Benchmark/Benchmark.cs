@@ -47,8 +47,8 @@ public class Benchmark
         var dispatchRServices = new ServiceCollection();
         dispatchRServices.AddDispatchR(new ConfigurationOptions() { IncludeHandlers = [typeof(PingRequestHandler)] });
         dispatchRServices.AddDispatchR(typeof(Benchmark).Assembly);
-        //dispatchRServices.AddScoped<IRequestHandler<PingRequest, ValueTask<PongResponse>>, PingRequestHandler>();
-        _dispatchRMediator = dispatchRServices.BuildServiceProvider().GetRequiredService<DispatchRMediator>();
+        dispatchRServices.AddScoped<DispatchR.Abstractions.Send.IRequestHandler<PingRequest, ValueTask<PongResponse>>, PingRequestHandler>();
+        //_dispatchRMediator = dispatchRServices.BuildServiceProvider().GetRequiredService<DispatchRMediator>();
     }
 
     [Benchmark(Baseline = true)]

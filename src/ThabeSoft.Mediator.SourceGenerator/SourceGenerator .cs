@@ -9,7 +9,7 @@ namespace ThabeSoft.Mediator.SourceGenerator;
 
 
 [Generator]
-public sealed class HandlerSourceGenerator : IIncrementalGenerator
+public sealed class SourceGenerator : IIncrementalGenerator
 {
     private const string RequestHandlerInterfaceName = "IRequestHandler";
     private const string NotificationHandlerInterfaceName = "INotificationHandler";
