@@ -33,25 +33,44 @@ public sealed class HandlerDescriptorCollection(
     /// </summary>
     /// <param name="lifetime"></param>
     /// <returns></returns>
-    public IHandlerDescriptorCollection SetDefaultLifetime(ServiceLifetime lifetime)
+    public IHandlerDescriptorCollection Default(ServiceLifetime lifetime)
     {
         _defaultLifetime = lifetime;
         return this;
     }
-    public IHandlerDescriptorCollection UpdateAll(Func<HandlerDescriptor, bool> matcher, Action<HandlerDescriptor> action)
+    /// <summary>
+    /// 查询符合条件的元素进行批处理
+    /// </summary>
+    /// <param name="matcher"></param>
+    /// <returns></returns>
+    public IHandlerDescriptorBatch Batch(Func<IHandlerDescriptor, bool> matcher)
+    {
+        return new HandlerDescriptorBatch(this, matcher);
+    }
+
+    /// <summary>
+    /// 查询符合条件的元素执行更新动作
+    /// </summary>
+    /// <param name="matcher"></param>
+    /// <param name="action"></param>
+    /// <returns></returns>
+    public IHandlerDescriptorCollection Update(Func<HandlerDescriptor, bool> matcher, Action<HandlerDescriptor> action)
     {
         _changes.Add((matcher, action));
         return this;
     }
-    public IHandlerDescriptorCollection ExceptAll(Func<HandlerDescriptor, bool> matcher)
+
+    /// <summary>
+    /// 构建时将排除符合条件的元素
+    /// </summary>
+    /// <param name="matcher"></param>
+    /// <returns></returns>
+    public IHandlerDescriptorCollection Except(Func<HandlerDescriptor, bool> matcher)
     {
         _filters.Add(matcher);
         return this;
     }
-    public IHandlerDescriptorBatch FindAll(Func<HandlerDescriptor, bool> matcher)
-    {
-        return new HandlerDescriptorBatch(this, matcher);
-    }
+    
 
     #endregion
 
@@ -113,5 +132,29 @@ public sealed class HandlerDescriptorCollection(
         descriptor = factory.Invoke();
         _descriptors.Add(descriptor);
         return descriptor;
+    }
+}
+
+
+public class HandlerDescriptorBatch(
+    HandlerDescriptorCollection root,
+    Func<HandlerDescriptor, bool> matcher
+    ) : IHandlerDescriptorBatch
+{
+    public IHandlerDescriptorBatch SetLifetime(ServiceLifetime lifetime)
+    {
+        root.Update(matcher, x => x.SetLifetime(lifetime));
+        return this;
+    }
+
+    public IHandlerDescriptorBatch Except()
+    {
+        root.Except(matcher);
+        return this;
+    }
+
+    public IHandlerDescriptorCollection Apply()
+    {
+        return root;
     }
 }

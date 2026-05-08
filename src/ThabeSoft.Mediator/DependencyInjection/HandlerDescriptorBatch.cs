@@ -9,9 +9,9 @@ namespace ThabeSoft.Mediator.DependencyInjection;
 /// <param name="root"></param>
 /// <param name="matcher"></param>
 public class HandlerDescriptorBatch(
-    IHandlerDescriptorCollection root,
+    HandlerDescriptorCollection root,
     Func<HandlerDescriptor, bool> matcher
-    ) : IHandlerDescriptorBatch
+    ) : DescriptorBatchBase<HandlerDescriptor, HandlerDescriptorCollection, HandlerDescriptor>
 {
     private readonly Func<HandlerDescriptor, bool> _matcher = matcher;
 
@@ -27,7 +27,7 @@ public class HandlerDescriptorBatch(
         return this;
     }
 
-    public IHandlerDescriptorCollection Back()
+    public IHandlerDescriptorCollection Apply()
     {
         return root;
     }

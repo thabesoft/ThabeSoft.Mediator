@@ -1,33 +1,24 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
-namespace ThabeSoft.Mediator.DependencyInjection;
+﻿namespace ThabeSoft.Mediator.DependencyInjection;
 
 
-/// <summary>
-/// 中间件描述器
-/// </summary>
-public sealed class MiddlewareDescriptor : IMiddlewareDescriptor
+
+public class DescriptorBase : IServiceTypeDescriptable
 {
-    private readonly IMiddlewareDescriptorCollection _root;
-
-    public MiddlewareKind Kind { get; }
     public Type ServiceType { get; }
     public Type ImplementationType { get; }
-    public Type? InputType { get;  }
-    public Type? OutputType { get;  }
-    public ServiceLifetime? Lifetime { get; private set; }
+    public LifetimeKind Lifetime { get; set; }
 
 
-    private MiddlewareDescriptor(
-        IMiddlewareDescriptorCollection root, 
-        MiddlewareKind kind, 
-        Type interfaceType, 
-        Type implementationType, 
-        Type inputType, 
+    protected DescriptorBase(
+        MiddlewareDescriptorCollection root,
+        HandlerKind kind,
+        Type interfaceType,
+        Type implementationType,
+        Type inputType,
         Type? responseType)
     {
         _root = root;
-        Kind = kind;
+        HandlerKind = kind;
         ServiceType = interfaceType;
         ImplementationType = implementationType;
 
@@ -35,45 +26,84 @@ public sealed class MiddlewareDescriptor : IMiddlewareDescriptor
         OutputType = responseType;
     }
 
-    public static MiddlewareDescriptor Request<TMiddleware, TInput, TOutput>(IMiddlewareDescriptorCollection root)
+
+    /// <summary>
+    /// 排除自己
+    /// </summary>
+    /// <returns></returns>
+    public IMiddlewareDescriptorCollection Except()
+    {
+        _root.ExceptAll(x => x.Equals(this));
+        return _root;
+    }
+
+    /// <summary>
+    /// 返回上一级
+    /// </summary>
+    /// <returns></returns>
+    public IMiddlewareDescriptorCollection Back()
+    {
+        return _root;
+    }
+}
+
+
+
+/// <summary>
+/// 中间件描述器
+/// </summary>
+public sealed class MiddlewareDescriptor : IMiddlewareDescriptor
+{
+    private readonly MiddlewareDescriptorCollection _root;
+
+
+    public HandlerKind HandlerKind { get; }
+    public Type ServiceType { get; }
+    public Type ImplementationType { get; }
+    public Type InputType { get; }
+    public Type? OutputType { get;  }
+    public LifetimeKind Lifetime { get; set; }
+
+    
+
+    private MiddlewareDescriptor(
+        MiddlewareDescriptorCollection root,
+        HandlerKind kind, 
+        Type interfaceType, 
+        Type implementationType, 
+        Type inputType, 
+        Type? responseType)
+    {
+        _root = root;
+        HandlerKind = kind;
+        ServiceType = interfaceType;
+        ImplementationType = implementationType;
+
+        InputType = inputType;
+        OutputType = responseType;
+    }
+
+    public static MiddlewareDescriptor Request<TMiddleware, TInput, TOutput>(MiddlewareDescriptorCollection root)
         where TMiddleware : IMiddleware<TInput, TOutput>
         where TInput : IRequest<TOutput>
     {
-        return new MiddlewareDescriptor(root, 
-            MiddlewareKind.Closed, 
+        return new MiddlewareDescriptor(root,
+            HandlerKind.RequestResponse, 
             typeof(IMiddleware<TInput, TOutput>), 
             typeof(TMiddleware), 
             typeof(TInput), 
             typeof(TOutput));
     }
-    public static MiddlewareDescriptor Request<TMiddleware, TInput>(IMiddlewareDescriptorCollection root)
+    public static MiddlewareDescriptor Request<TMiddleware, TInput>(MiddlewareDescriptorCollection root)
         where TMiddleware : IMiddleware<TInput>
         where TInput : IRequest
     {
-        return new MiddlewareDescriptor(root, 
-            MiddlewareKind.Closed, 
+        return new MiddlewareDescriptor(root,
+            HandlerKind.Request, 
             typeof(IMiddleware<TInput>),
             typeof(TMiddleware),
             typeof(TInput), 
             null);
-    }
-
-
-    /// <summary>
-    /// 设置生命周期
-    /// </summary>
-    /// <param name="lifetime"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentException"></exception>
-    public IMiddlewareDescriptor SetLifetime(ServiceLifetime lifetime)
-    {
-        if (lifetime is ServiceLifetime.Scoped or ServiceLifetime.Singleton or ServiceLifetime.Transient)
-        {
-            Lifetime = lifetime;
-            return this;
-        }
-
-        throw new ArgumentException($"生命周期类型异常: {lifetime}");
     }
 
     /// <summary>
@@ -94,11 +124,6 @@ public sealed class MiddlewareDescriptor : IMiddlewareDescriptor
     {
         return _root;
     }
-
-
-    public static bool operator ==(MiddlewareDescriptor left, MiddlewareDescriptor rigt) => Equals(left, rigt);
-    public static bool operator !=(MiddlewareDescriptor left, MiddlewareDescriptor rigt) => !Equals(left, rigt);
-
 
     
     public override bool Equals(object obj)
@@ -132,6 +157,6 @@ public sealed class MiddlewareDescriptor : IMiddlewareDescriptor
     /// <returns></returns>
     public override string ToString()
     {
-        return $"[{Kind}] {ServiceType}, {ImplementationType}";
+        return $"[{HandlerKind}] {ServiceType}, {ImplementationType}";
     }
 }

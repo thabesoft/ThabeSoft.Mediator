@@ -48,7 +48,7 @@ public sealed class MiddlewareDescriptorCollection(
         _filters.Add(matcher);
         return this;
     }
-    public IMiddlewareDescriptorBatch FindAll(Func<IMiddlewareDescriptor, bool> matcher)
+    public IMiddlewareDescriptorBatch Batch(Func<IMiddlewareDescriptor, bool> matcher)
     {
         return new MiddlewareDescriptorBatch(this, matcher);
     }

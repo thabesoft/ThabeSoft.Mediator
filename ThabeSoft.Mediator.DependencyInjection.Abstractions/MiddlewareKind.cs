@@ -9,10 +9,10 @@ public enum MiddlewareKind : byte
     /// <summary>
     /// 开放类型
     /// </summary>
-    Open,
+    Request,
 
     /// <summary>
     /// 封闭类型
     /// </summary>
-    Closed,
+    RequestResponse,
 }

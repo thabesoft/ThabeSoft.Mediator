@@ -24,6 +24,30 @@ public class HandlerBuildTests
         (HandlerKind.Notification, NotificationHandlerServiceType)
     ];
 
+
+    [TestMethod(DisplayName = "添加请求-响应处理器")]
+    public void AddRequest()
+    {
+        var collection = new HandlerDescriptorCollection();
+        IHandlerDescriptorCollection builder = collection;
+        builder
+            .Batch(x => true).Scoped().Apply() // 所有元素改作用域
+            .All().Scoped().Apply()            // 所有元素改作用域
+            .Requests().Except().Apply()       // 所有请求 排除
+            .Notifications().Singleton().Apply() // 所有通知 改 单例
+            .Singleton().Transient().Apply();    // 所有单例 改 瞬态
+
+        var descriptors = collection.BuildToServiceDescriptors();
+        Assert.HasCount(1, descriptors);
+
+        var descriptor = descriptors.First();
+        Assert.AreEqual(typeof(IRequestHandler<ResultRequest, Response>), descriptor.ServiceType);
+        Assert.AreEqual(typeof(ResultRequestHandler), descriptor.ImplementationType);
+        Assert.AreEqual(collection.DefaultLifetime, descriptor.Lifetime);
+    }
+
+
+
     #region -- 添加处理器 --
 
 
@@ -85,7 +109,7 @@ public class HandlerBuildTests
     {
         var collection = new HandlerDescriptorCollection();
 
-        collection.SetDefaultLifetime(serviceLifetime);
+        collection.Default(serviceLifetime);
 
         Assert.AreEqual(serviceLifetime, collection.DefaultLifetime);
     }
@@ -108,7 +132,7 @@ public class HandlerBuildTests
         collection.AddNotification<NotificationHandler, Notification>();
 
 
-        collection.UpdateAll(x => x.Kind == kind, x => x.SetLifetime(serviceLifetime));
+        collection.Update(x => x.HandlerKind == kind, x => x.SetLifetime(serviceLifetime));
 
         // Assert
         var descriptors = collection.BuildToServiceDescriptors().ToList();
@@ -135,7 +159,7 @@ public class HandlerBuildTests
         collection.AddNotification<NotificationHandler, Notification>();
 
 
-        collection.ExceptAll(x => x.Kind == kind);
+        collection.Except(x => x.HandlerKind == kind);
 
         // Assert
         var descriptors = collection.BuildToServiceDescriptors().ToList();
@@ -163,7 +187,7 @@ public class HandlerBuildTests
         collection.AddNotification<NotificationHandler, Notification>();
 
 
-        collection.FindAll(x => x.Kind == kind)
+        collection.Batch(x => x.HandlerKind == kind)
             .SetLifetime(serviceLifetime);
 
         // Assert

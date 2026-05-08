@@ -36,7 +36,7 @@ public class Benchmark
         thabesoftServices.AddMediatorMiddlewares(x => x.All().Singleton());
         thabesoftServices.AddMediatorHandlers(x =>
         {
-            x.FindAllByRequest<PingRequest, PongResponse>().Singleton();
+            x.Requests<PingRequest, PongResponse>().Singleton();
         });
         _thabeSoftMediator = thabesoftServices.BuildServiceProvider().GetRequiredService<ThabeSoftMediator>();
 
