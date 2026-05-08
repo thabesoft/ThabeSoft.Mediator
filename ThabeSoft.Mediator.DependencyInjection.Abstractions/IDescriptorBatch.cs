@@ -4,27 +4,25 @@
 /// <summary>
 /// 描述批处理
 /// </summary>
-/// <typeparam name="TSelft"></typeparam>
-/// <typeparam name="TParent"></typeparam>
-public interface IDescriptorBatch<TSelft, TParent>
+public interface IDescriptorBatch
 {
     /// <summary>
     /// 提交修改并返回根构建器
     /// </summary>
-    TParent Apply();
+    IDescriptorCollection Apply();
 
     /// <summary>
     /// 排除所有
     /// </summary>
     /// <returns></returns>
-    TSelft Except();
+    IDescriptorBatch Except();
 
     /// <summary>
     /// 批量设置生命周期
     /// </summary>
     /// <param name="lifetime"></param>
     /// <returns></returns>
-    TSelft SetLifetime(LifetimeKind lifetime);
+    IDescriptorBatch SetLifetime(LifetimeKind lifetime);
 }
 
 
@@ -34,14 +32,13 @@ public interface IDescriptorBatch<TSelft, TParent>
 public static class DescriptorBatchExtensions
 {
     // 硬编码 API
-    extension<TSelf, TParent>(IDescriptorBatch<TSelf, TParent> batch) 
-        where TSelf : IDescriptorBatch<TSelf, TParent>
+    extension(IDescriptorBatch batch) 
     {
         /// <summary>
         /// 设置为作用域生命周期
         /// </summary>
         /// <returns></returns>
-        public TSelf Scoped()
+        public IDescriptorBatch Scoped()
         {
             return batch.SetLifetime(LifetimeKind.Scoped);
         }
@@ -50,7 +47,7 @@ public static class DescriptorBatchExtensions
         /// 设置为单例生命周期
         /// </summary>
         /// <returns></returns>
-        public TSelf Singleton()
+        public IDescriptorBatch Singleton()
         {
             return batch.SetLifetime(LifetimeKind.Singleton);
         }
@@ -59,7 +56,7 @@ public static class DescriptorBatchExtensions
         /// 设置为瞬态生命周期
         /// </summary>
         /// <returns></returns>
-        public TSelf Transient()
+        public IDescriptorBatch Transient()
         {
             return batch.SetLifetime(LifetimeKind.Transient);
         }

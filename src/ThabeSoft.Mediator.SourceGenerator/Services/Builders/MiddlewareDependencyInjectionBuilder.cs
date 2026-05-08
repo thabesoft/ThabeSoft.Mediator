@@ -32,9 +32,9 @@ internal class MiddlewareDependencyInjectionBuilder : CodeFileBuilderBase
         return $$"""
     internal static class ThabeSoftMiddlewareDependencyInjectionExtensions
     {
-        public static void AddMediatorMiddlewares(this IServiceCollection services, Action<IMiddlewareDescriptorCollection>? optionAction = null)
+        public static void AddMediatorMiddlewares(this IServiceCollection services, Action<IDescriptorCollection>? optionAction = null)
         {
-            var middleware_descriptors = new MiddlewareDescriptorCollection();
+            var middleware_descriptors = new DescriptorCollection();
 
 {{statements_code}}
 
@@ -54,7 +54,7 @@ internal class MiddlewareDependencyInjectionBuilder : CodeFileBuilderBase
         {
             return $"""
             // {middlewareInfo.Kind}
-            middleware_descriptors.AddRequest<
+            middleware_descriptors.AddRequestMiddleware<
                 {middlewareInfo.ImplementationTypeSymbol.ToDisplayString(TypeParserExtensiosn.NonGenericFullNameFormat)}<
                     {handlerInfo.InputTypeSymbol},
                     {handlerInfo.OutputTypeSymbol}>,
@@ -66,7 +66,7 @@ internal class MiddlewareDependencyInjectionBuilder : CodeFileBuilderBase
         {
             return $"""
             // {middlewareInfo.Kind}
-            middleware_descriptors.AddRequest<
+            middleware_descriptors.AddRequestMiddleware<
                 {middlewareInfo.ImplementationTypeSymbol.ToDisplayString(TypeParserExtensiosn.NonGenericFullNameFormat)}<
                     {handlerInfo.InputTypeSymbol}>,
                 {handlerInfo.InputTypeSymbol}>();

@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using ThabeSoft.Mediator.DependencyInjection;
 using ThabeSoft.Mediator.IntegrationTests.Messages;
 using ThabeSoft.Mediator.Tests.Messages;
 

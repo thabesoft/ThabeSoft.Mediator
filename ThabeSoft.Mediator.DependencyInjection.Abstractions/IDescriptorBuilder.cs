@@ -5,7 +5,7 @@
 /// 描述构建器
 /// </summary>
 /// <typeparam name="TParent"></typeparam>
-public interface IDescriptorBuilder<TSelf, TParent> :  ILifetimeBuilder
+public interface IDescriptorBuilder
 {
     /// <summary>
     /// 业务类型
@@ -42,18 +42,18 @@ public interface IDescriptorBuilder<TSelf, TParent> :  ILifetimeBuilder
     /// </summary>
     /// <param name="lifetime"></param>
     /// <returns></returns>
-    TSelf SetLifetime(LifetimeKind lifetime);
+    IDescriptorBuilder SetLifetime(LifetimeKind lifetime);
 
     /// <summary>
     /// 跟容器
     /// </summary>
-    TParent Back();
+    IDescriptorCollection Back();
 
     /// <summary>
     /// 从跟容器排除自己
     /// </summary>
     /// <returns></returns>
-    TParent Except();
+    IDescriptorCollection Except();
 }
 
 
@@ -62,13 +62,13 @@ public interface IDescriptorBuilder<TSelf, TParent> :  ILifetimeBuilder
 /// </summary>
 public static class DescriptorBuilderExtensions
 {
-    extension<T, Tparent>(IDescriptorBuilder<T, Tparent> descriptor)
+    extension(IDescriptorBuilder descriptor)
     {
         /// <summary>
         /// 设置为作用域生命周期
         /// </summary>
         /// <returns></returns>
-        public T Scoped()
+        public IDescriptorBuilder Scoped()
         {
             return descriptor.SetLifetime(LifetimeKind.Scoped);
         }
@@ -77,7 +77,7 @@ public static class DescriptorBuilderExtensions
         /// 设置为单例生命周期
         /// </summary>
         /// <returns></returns>
-        public T Singleton()
+        public IDescriptorBuilder Singleton()
         {
             return descriptor.SetLifetime(LifetimeKind.Singleton);
         }
@@ -86,7 +86,7 @@ public static class DescriptorBuilderExtensions
         /// 设置为瞬态生命周期
         /// </summary>
         /// <returns></returns>
-        public T Transient()
+        public IDescriptorBuilder Transient()
         {
             return descriptor.SetLifetime(LifetimeKind.Transient);
         }
@@ -95,7 +95,7 @@ public static class DescriptorBuilderExtensions
         /// 不指定生命周期
         /// </summary>
         /// <returns></returns>
-        public T None()
+        public IDescriptorBuilder None()
         {
             return descriptor.SetLifetime(LifetimeKind.None);
         }

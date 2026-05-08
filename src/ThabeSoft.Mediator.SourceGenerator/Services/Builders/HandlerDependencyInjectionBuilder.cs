@@ -29,9 +29,9 @@ public sealed class HandlerDependencyInjectionBuilder : CodeFileBuilderBase
         return $$"""
     internal static class ThabeSoftMediatorHandlerDependencyInjectionExtensions
     {
-        public static void AddMediatorHandlers(this IServiceCollection services, Action<IHandlerDescriptorCollection>? optionAction = null)
+        public static void AddMediatorHandlers(this IServiceCollection services, Action<IDescriptorCollection>? optionAction = null)
         {
-            var handler_descriptors = new HandlerDescriptorCollection();
+            var handler_descriptors = new DescriptorCollection();
 
 {{statements_code}}
 

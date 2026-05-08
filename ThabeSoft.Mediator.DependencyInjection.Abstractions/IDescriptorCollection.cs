@@ -5,8 +5,7 @@ namespace ThabeSoft.Mediator.DependencyInjection;
 /// <summary>
 /// 业务描述集合
 /// </summary>
-public interface IDescriptorCollection<TSelf, TBatch, TDescriptor>
-    where TDescriptor : notnull
+public interface IDescriptorCollection
 {
     /// <summary>
     /// 默认生命周期
@@ -18,14 +17,14 @@ public interface IDescriptorCollection<TSelf, TBatch, TDescriptor>
     /// </summary>
     /// <param name="lifetime"></param>
     /// <returns></returns>
-    TSelf Default(ServiceLifetime lifetime);
+    IDescriptorCollection Default(ServiceLifetime lifetime);
 
     /// <summary>
     /// 查询符合条件的元素进行批处理
     /// </summary>
     /// <param name="matcher"></param>
     /// <returns></returns>
-    TBatch Batch(Func<TDescriptor, bool> matcher);
+    IDescriptorBatch Batch(Func<IDescriptorBuilder, bool> matcher);
 }
 
 /// <summary>
@@ -33,15 +32,14 @@ public interface IDescriptorCollection<TSelf, TBatch, TDescriptor>
 /// </summary>
 public static class DescriptorCollectionExtensions
 {
-    extension<TCollection, TBatch, TDescriptor>(IDescriptorCollection<TCollection, TBatch, TDescriptor> collection)
-        where TDescriptor : IDescriptorBuilder<TDescriptor, TCollection>
+    extension(IDescriptorCollection collection)
     {
         /// <summary>
         /// 根据生命周期查询
         /// </summary>
         /// <param name="lifetime"></param>
         /// <returns></returns>
-        public TBatch WithLifetime(LifetimeKind lifetime)
+        public IDescriptorBatch WithLifetime(LifetimeKind lifetime)
         {
             return collection.Batch(x => x.Lifetime.HasFlag(lifetime));
         }
@@ -50,7 +48,7 @@ public static class DescriptorCollectionExtensions
         /// 所有单例的
         /// </summary>
         /// <returns></returns>
-        public TBatch Singleton()
+        public IDescriptorBatch Singleton()
         {
             return collection.WithLifetime(LifetimeKind.Singleton);
         }
@@ -58,7 +56,7 @@ public static class DescriptorCollectionExtensions
         /// 所有作用域的
         /// </summary>
         /// <returns></returns>
-        public TBatch Scoped()
+        public IDescriptorBatch Scoped()
         {
             return collection.WithLifetime(LifetimeKind.Scoped);
         }
@@ -66,7 +64,7 @@ public static class DescriptorCollectionExtensions
         /// 所有瞬态的
         /// </summary>
         /// <returns></returns>
-        public TBatch Transient()
+        public IDescriptorBatch Transient()
         {
             return collection.WithLifetime(LifetimeKind.Transient);
         }
@@ -74,7 +72,7 @@ public static class DescriptorCollectionExtensions
         /// 所有未指定生命周期的
         /// </summary>
         /// <returns></returns>
-        public TBatch None()
+        public IDescriptorBatch None()
         {
             return collection.WithLifetime(LifetimeKind.None);
         }
@@ -83,27 +81,23 @@ public static class DescriptorCollectionExtensions
         /// 所有的
         /// </summary>
         /// <returns></returns>
-        public TBatch All()
+        public IDescriptorBatch All()
         {
             return collection.Batch(x => true);
         }
-    }
 
 
 
 
 
 
-    extension<TCollection, TBatch, TDescriptor>(IDescriptorCollection<TCollection, TBatch, TDescriptor> collection)
-        where TCollection : IDescriptorCollection<TCollection, TBatch, TDescriptor>
-        where TDescriptor : IDescriptorBuilder<TDescriptor, TCollection>
-    {
+
         /// <summary>
         /// 查询该请求的所有处理器
         /// </summary>
         /// <typeparam name="TRequest"></typeparam>
         /// <returns></returns>
-        public TBatch Request<TRequest>()
+        public IDescriptorBatch Request<TRequest>()
             where TRequest : IRequest
         {
             var service_type = typeof(IRequestHandler<TRequest>);
@@ -116,7 +110,7 @@ public static class DescriptorCollectionExtensions
         /// <typeparam name="TRequest"></typeparam>
         /// <typeparam name="TResult"></typeparam>
         /// <returns></returns>
-        public TBatch Request<TRequest, TResult>()
+        public IDescriptorBatch Request<TRequest, TResult>()
             where TRequest : IRequest<TResult>
         {
             var service_type = typeof(IRequestHandler<TRequest, TResult>);
@@ -128,7 +122,7 @@ public static class DescriptorCollectionExtensions
         /// </summary>
         /// <typeparam name="TNotification"></typeparam>
         /// <returns></returns>
-        public TBatch Notifications<TNotification>()
+        public IDescriptorBatch Notifications<TNotification>()
            where TNotification : INotification
         {
             var service_type = typeof(INotificationHandler<TNotification>);
@@ -142,7 +136,7 @@ public static class DescriptorCollectionExtensions
         /// </summary>
         /// <param name="includeResponseRequest"></param>
         /// <returns></returns>
-        public TBatch Requests(bool includeResponseRequest = true)
+        public IDescriptorBatch Requests(bool includeResponseRequest = true)
         {
             if (includeResponseRequest)
             {
@@ -158,7 +152,7 @@ public static class DescriptorCollectionExtensions
         /// 所有通知处理器
         /// </summary>
         /// <returns></returns>
-        public TBatch Notifications()
+        public IDescriptorBatch Notifications()
         {
             return collection.Batch(x => x.HandlerKind == HandlerKind.Notification);
         }

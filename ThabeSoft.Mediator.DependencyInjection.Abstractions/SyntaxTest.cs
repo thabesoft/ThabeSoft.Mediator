@@ -4,7 +4,7 @@ namespace ThabeSoft.Mediator.DependencyInjection;
 
 public class SyntaxTest
 {
-    public static void Hanlder(IHandlerDescriptorCollection option)
+    public static void Hanlder(IDescriptorCollection option)
     {
         option.Notifications().Singleton();
         option.Requests().Scoped();
@@ -16,7 +16,7 @@ public class SyntaxTest
         option.WithLifetime(LifetimeKind.Singleton | LifetimeKind.Scoped).Except();
     }
 
-    public static void Middleware(IMiddlewareDescriptorCollection option)
+    public static void Middleware(IDescriptorCollection option)
     {
         option.Requests().Singleton();
     }
