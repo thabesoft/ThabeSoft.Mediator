@@ -32,11 +32,11 @@ public class Benchmark
     {
         // ThabeSoft
         var thabesoftServices = new ServiceCollection();
-        thabesoftServices.AddMediator();
-        thabesoftServices.AddMediatorMiddlewares(x => x.All().Transient());
+        thabesoftServices.AddMediator(ServiceLifetime.Singleton);
+        thabesoftServices.AddMediatorMiddlewares(x => x.All().Singleton());
         thabesoftServices.AddMediatorHandlers(x =>
         {
-            x.FindAllByRequest<PingRequest, PongResponse>().Transient();
+            x.FindAllByRequest<PingRequest, PongResponse>().Singleton();
         });
         _thabeSoftMediator = thabesoftServices.BuildServiceProvider().GetRequiredService<ThabeSoftMediator>();
 
@@ -46,20 +46,10 @@ public class Benchmark
         mediatRServices.AddLogging();
         mediatRServices.AddMediatR(cfg =>
         {
-            cfg.Lifetime = ServiceLifetime.Transient;
+            cfg.Lifetime = ServiceLifetime.Singleton;
             cfg.RegisterServicesFromAssembly(typeof(Benchmark).Assembly);
  
             cfg.AddOpenBehavior(typeof(CatchMiddleware<,>));
-            //cfg.AddOpenBehavior(typeof(LoggingMiddleware<,>));
-            //cfg.AddOpenBehavior(typeof(TransactionMiddleware<,>));
-            //cfg.AddOpenBehavior(typeof(ValidationMiddleware<,>));
-            //cfg.AddOpenBehavior(typeof(AuthorizationMiddleware<,>));
-            //cfg.AddOpenBehavior(typeof(CachingMiddleware<,>));
-            //cfg.AddOpenBehavior(typeof(MetricsMiddleware<,>));
-            //cfg.AddOpenBehavior(typeof(RetryMiddleware<,>));
-            //cfg.AddOpenBehavior(typeof(CircuitBreakerMiddleware<,>));
-            //cfg.AddOpenBehavior(typeof(TracingMiddleware<,>));
-            //cfg.AddOpenBehavior(typeof(EncryptionMiddleware<,>));
         });
         _mediatorMediator = mediatRServices.BuildServiceProvider().GetRequiredService<MediatorMediator>();
 
@@ -69,23 +59,6 @@ public class Benchmark
         concordiaServices.AddConcordiaHandlers();
         concordiaServices.AddConcordiaCoreServices();
         _concordiaMediator = concordiaServices.BuildServiceProvider().GetRequiredService<ConcordiaMediator>();
-
-        return;
-        // DispatchR
-        var dispatchRServices = new ServiceCollection();
-        dispatchRServices.AddDispatchR(options =>
-        {
-            options.Assemblies.Add(typeof(Benchmark).Assembly);
-            options.RegisterPipelines = true;
-            options.RegisterNotifications = false;
-            options.PipelineOrder =
-            [
-                typeof(CatchMiddleware<,>)
-            ];
-            options.IncludeHandlers = [typeof(PingRequestHandler)];
-        });
-        var servi = dispatchRServices.BuildServiceProvider();
-        _dispatchRMediator = servi.GetRequiredService<DispatchRMediator>();
     }
 
     [Benchmark(Baseline = true)]

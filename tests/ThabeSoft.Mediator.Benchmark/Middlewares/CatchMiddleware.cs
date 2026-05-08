@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using ThabeSoft.Mediator.Benchmark.Messages;
 
 namespace ThabeSoft.Mediator.Benchmark.Middlewares;
 
@@ -6,8 +7,7 @@ namespace ThabeSoft.Mediator.Benchmark.Middlewares;
 public sealed class CatchMiddleware<TRequest, TResponse> :
     IMiddleware<TRequest, TResponse>,
     MediatR.IPipelineBehavior<TRequest, TResponse>,
-    DispatchR.Abstractions.Send.IPipelineBehavior<TRequest, ValueTask<TResponse>>,
-    Concordia.IPipelineBehavior<TRequest, TResponse>
+    DispatchR.Abstractions.Send.IPipelineBehavior<TRequest, ValueTask<TResponse>>
 
     where TRequest : class,
         IRequest<TResponse>,
@@ -31,6 +31,14 @@ public sealed class CatchMiddleware<TRequest, TResponse> :
         => NextPipeline.Handle(request, cancellationToken);
 
     // Concordia
-    public Task<TResponse> Handle(TRequest request, Concordia.RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+    public Task<PongResponse> Handle(Messages.PingRequest request, Concordia.RequestHandlerDelegate<PongResponse> next, CancellationToken cancellationToken)
+        => next(cancellationToken);
+}
+
+
+public sealed class CatchMiddleware : Concordia.IPipelineBehavior<Messages.PingRequest, PongResponse>
+{
+    // Concordia
+    public Task<PongResponse> Handle(Messages.PingRequest request, Concordia.RequestHandlerDelegate<PongResponse> next, CancellationToken cancellationToken)
         => next(cancellationToken);
 }

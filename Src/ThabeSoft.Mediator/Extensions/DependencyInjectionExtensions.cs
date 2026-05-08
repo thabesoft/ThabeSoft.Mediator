@@ -10,14 +10,26 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static partial class DependencyInjectionExtensions
 {
     /// <summary>
-    /// 添加中介者
+    /// 添加自定义中介者
     /// </summary>
-    public static IServiceCollection AddMediator(this IServiceCollection services)
+    public static IServiceCollection AddMediator<TMediator>(this IServiceCollection services, ServiceLifetime lifetime = ServiceLifetime.Scoped)
+        where TMediator : class, IMediator
     {
-        services.TryAddScoped<IMediator, Mediator>();
-        services.AddScoped<ISender>(x => x.GetRequiredService<IMediator>());
-        services.AddScoped<IPublisher>(x => x.GetRequiredService<IMediator>());
+        services.TryAdd(new ServiceDescriptor(typeof(IMediator), typeof(TMediator), lifetime));
+        services.TryAdd(new ServiceDescriptor(typeof(ISender), sp => sp.GetRequiredService<IMediator>(), lifetime));
+        services.TryAdd(new ServiceDescriptor(typeof(IPublisher), sp => sp.GetRequiredService<IMediator>(), lifetime));
 
         return services;
+    }
+
+    /// <summary>
+    /// 添加默认中介者
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="lifetime"></param>
+    /// <returns></returns>
+    public static IServiceCollection AddMediator(this IServiceCollection services, ServiceLifetime lifetime = ServiceLifetime.Scoped)
+    {
+        return services.AddMediator<Mediator>(lifetime);
     }
 }
