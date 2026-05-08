@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using ThabeSoft.Mediator.IntegrationTests.Messages;
 using ThabeSoft.Mediator.Tests.Messages;
 
 namespace ThabeSoft.Mediator.IntegrationTests;
@@ -17,15 +17,28 @@ public class MediatorTests
     public TestContext TestContext { get; set; } = default!;
 
 
+
     [TestInitialize]
     public void Setup()
     {
         var services = new ServiceCollection();
         services.AddMediator();
         services.AddMediatorHandlers();
+        services.AddMediatorMiddlewares();
 
         RootProvider = services.BuildServiceProvider();
     }
+
+    [DataRow(123)]
+    [TestMethod(DisplayName = "请求流程")]
+    public async Task Request_Response(int pindId)
+    {
+        using var mediator = CreateMediator();
+
+        var resutl = await mediator.SendAsync(new PingRequest(pindId), TestContext.CancellationToken);
+        Assert.AreEqual(pindId, resutl.PingId);
+    }
+
 
 
     [DataRow(1000, 10, DisplayName = "1千次10并发")]
@@ -151,23 +164,23 @@ public sealed class ScopeMediator(IServiceScope scope) : IMediator, IDisposable
 {
     private readonly IMediator _mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
-    public ValueTask PublishAsync<TNotification>(TNotification notification, CancellationToken cancellationToken = default)
+    public ValueTask PublishAsync<TNotification>(TNotification notification, CancellationToken cancellationToken)
         where TNotification : INotification
     {
         return _mediator.PublishAsync(notification, cancellationToken);
     }
 
-    public ValueTask SendAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
-        where TRequest : IRequest
-    {
-        return _mediator.SendAsync(request, cancellationToken);
-    }
-
-    public ValueTask<TResponse> SendAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
+    public ValueTask<TResponse> SendAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken)
         where TRequest : IRequest<TResponse>
     {
         return _mediator.SendAsync<TRequest, TResponse>(request, cancellationToken);
     }
+    public ValueTask SendAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
+        where TRequest : IRequest
+    {
+        return _mediator.SendAsync<TRequest>(request, cancellationToken);
+    }
+
 
     public void Dispose()
     {

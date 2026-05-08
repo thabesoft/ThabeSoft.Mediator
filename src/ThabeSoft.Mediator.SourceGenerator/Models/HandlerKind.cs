@@ -1,9 +1,10 @@
 ﻿namespace ThabeSoft.Mediator.SourceGenerator.Models;
 
+
 /// <summary>
 /// 处理器类型
 /// </summary>
-internal enum HandlerKind
+public enum HandlerKind
 {
     /// <summary>
     /// 请求

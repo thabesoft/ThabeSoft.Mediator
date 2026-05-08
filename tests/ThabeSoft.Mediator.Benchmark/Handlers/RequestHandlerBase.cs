@@ -3,29 +3,36 @@
 public abstract class RequestHandlerBase<TRequest, TResponse> : 
     IRequestHandler<TRequest, TResponse>,
     MediatR.IRequestHandler<TRequest, TResponse>,
-    DispatchR.Abstractions.Send.IRequestHandler<TRequest, ValueTask<TResponse>>
+    DispatchR.Abstractions.Send.IRequestHandler<TRequest, ValueTask<TResponse>>,
+    Concordia.IRequestHandler<TRequest, TResponse>
 
     where TRequest : class, IRequest<TResponse>,
         DispatchR.Abstractions.Send.IRequest<TRequest, ValueTask<TResponse>>,
-        MediatR.IRequest<TResponse>
-
+        MediatR.IRequest<TResponse>,
+        Concordia.IRequest<TResponse>
 {
-    protected abstract ValueTask<TResponse> HandleAsync(TRequest request, CancellationToken cancellationToken);
+    protected abstract ValueTask<TResponse> ValueHandleAsync(TRequest request, CancellationToken cancellationToken);
+    protected abstract Task<TResponse> HandleAsync(TRequest request, CancellationToken cancellationToken);
 
 
-    ValueTask<TResponse> DispatchR.Abstractions.Send.IRequestHandler<TRequest, ValueTask<TResponse>>.Handle(TRequest request, CancellationToken cancellationToken)
+
+    public Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken)
     {
         return HandleAsync(request, cancellationToken);
+    }
+    ValueTask<TResponse> DispatchR.Abstractions.Send.IRequestHandler<TRequest, ValueTask<TResponse>>.Handle(TRequest request, CancellationToken cancellationToken)
+    {
+        return ValueHandleAsync(request, cancellationToken);
     }
 
     Task<TResponse> MediatR.IRequestHandler<TRequest, TResponse>.Handle(TRequest request, CancellationToken cancellationToken)
     {
-        return HandleAsync(request, cancellationToken).AsTask();
+        return HandleAsync(request, cancellationToken);
     }
 
     ValueTask<TResponse> IRequestHandler<TRequest, TResponse>.HandleAsync(TRequest request, CancellationToken cancellationToken)
     {
-        return HandleAsync(request, cancellationToken);
+        return ValueHandleAsync(request, cancellationToken);
     }
 }
 

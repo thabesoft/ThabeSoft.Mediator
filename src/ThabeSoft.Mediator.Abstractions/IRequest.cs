@@ -7,7 +7,7 @@
 public interface IRequest;
 
 /// <summary>
-/// 请求
+/// 请求-响应
 /// </summary>
 /// <typeparam name="TResponse">响应</typeparam>
-public interface IRequest<TResponse>;
+public interface IRequest<out TResponse>;

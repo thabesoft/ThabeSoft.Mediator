@@ -19,7 +19,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\Src\ThabeSoft.Mediator.SourceGenerator\ThabeSoft.Mediator.SourceGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
 		<ProjectReference Include="..\..\src\ThabeSoft.Mediator\ThabeSoft.Mediator.csproj" />
 	</ItemGroup>
 

@@ -1,3 +1,3 @@
-﻿namespace ThabeSoft.Mediator.Tests.Messages;
+﻿namespace ThabeSoft.Mediator.IntegrationTests.Messages;
 
 public record DeleteRequest(int UserId) : IRequest;

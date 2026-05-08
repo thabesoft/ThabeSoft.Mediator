@@ -15,6 +15,9 @@ public static partial class DependencyInjectionExtensions
     public static IServiceCollection AddMediator(this IServiceCollection services)
     {
         services.TryAddScoped<IMediator, Mediator>();
+        services.AddScoped<ISender>(x => x.GetRequiredService<IMediator>());
+        services.AddScoped<IPublisher>(x => x.GetRequiredService<IMediator>());
+
         return services;
     }
 }

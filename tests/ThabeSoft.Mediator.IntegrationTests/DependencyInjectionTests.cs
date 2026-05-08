@@ -7,7 +7,7 @@ namespace ThabeSoft.Mediator.IntegrationTests;
 [TestClass]
 public class DependencyInjectionTests
 {
-    [TestMethod(DisplayName = "注册到Ioc容器")]
+    [TestMethod(DisplayName = "注册中介者")]
     public void AddMediator_ShouldRegisterMediator()
     {
         var services = new ServiceCollection();
@@ -22,9 +22,21 @@ public class DependencyInjectionTests
     {
         var services = new ServiceCollection();
         services.AddMediatorHandlers();
+        
 
         var sp = services.BuildServiceProvider();
         var handler = sp.GetService<IRequestHandler<PingRequest, PongResponse>>();
+        Assert.IsNotNull(handler);
+    }
+
+    [TestMethod(DisplayName = "自动处理器到Ioc容器")]
+    public void AddHandlers_AAAShouldAutoRegister()
+    {
+        var services = new ServiceCollection();
+        services.AddMediatorMiddlewares();
+
+        var sp = services.BuildServiceProvider();
+        var handler = sp.GetService<IMiddleware<PingRequest, PongResponse>>();
         Assert.IsNotNull(handler);
     }
 }

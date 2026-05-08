@@ -10,6 +10,11 @@
 
 	<ItemGroup>
 		<PackageReference Include="BenchmarkDotNet" Version="0.15.8" />
+		<PackageReference Include="Concordia.Core" Version="2.5.0" />
+		<PackageReference Include="Concordia.Generator" Version="2.5.0">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 		<PackageReference Include="DispatchR.Mediator" Version="2.1.1" />
 		<PackageReference Include="MediatR" Version="14.1.0" />
 	</ItemGroup>
