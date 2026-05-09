@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using ThabeSoft.Mediator.DependencyInjection;
 using ThabeSoft.Mediator.IntegrationTests.Messages;
 using ThabeSoft.Mediator.Tests.Messages;
 
@@ -25,7 +23,8 @@ public class MediatorTests
     {
         var services = new ServiceCollection();
         services.AddMediator();
-        services.AddMediator();
+        services.AddMediatorHandlers();
+        services.AddMediatorPipelineBehaviors();
 
         RootProvider = services.BuildServiceProvider();
     }

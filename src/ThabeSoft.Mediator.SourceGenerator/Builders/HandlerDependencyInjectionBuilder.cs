@@ -1,7 +1,7 @@
 ﻿using ThabeSoft.Mediator.SourceGenerator.Extensions;
 using ThabeSoft.Mediator.SourceGenerator.Models;
 
-namespace ThabeSoft.Mediator.SourceGenerator.Services.Builders;
+namespace ThabeSoft.Mediator.SourceGenerator.Builders;
 
 
 /// <summary>
@@ -18,14 +18,17 @@ public sealed class HandlerDependencyInjectionBuilder : CodeFileBuilderBase
         AddUsingNamespace("ThabeSoft.Mediator.DependencyInjection");
     }
 
-    protected override string BuildContentStatements(IReadOnlyCollection<ITypeInfo> typeTnfos)
+    protected override string BuildContentStatements(IReadOnlyCollection<TypeRegistration> infos)
     {
-        var _handlers = typeTnfos.OfType<HandlerInfo>().ToArray();
-        if (_handlers.Length == 0) return string.Empty;
+        var statements = infos
+            .Where(x => x.Kind == TypeRegistrationKind.Handler)
+            .Distinct()
+            .Select(GenerateRegisterStatements)
+            .Where(x => !string.IsNullOrEmpty(x));
 
-        // 处理器
-        var statements = _handlers.Select(GenerateRegisterStatements).Where(x => !string.IsNullOrEmpty(x));
         var statements_code = string.Join(NewLine + NewLine, statements);
+        if (string.IsNullOrWhiteSpace(statements_code)) return string.Empty;
+
 
         return $$"""
     internal static class ThabeSoftMediatorHandlerDependencyInjectionExtensions
@@ -42,9 +45,9 @@ public sealed class HandlerDependencyInjectionBuilder : CodeFileBuilderBase
     }
 
     // 生成处理器注册代码
-    private static string GenerateRegisterStatements(HandlerInfo info)
+    private static string GenerateRegisterStatements(TypeRegistration info)
     {
-        if (info.Kind == HandlerKind.RequestResponse && info.OutputTypeSymbol is not null)
+        if (info.HandlerKind == HandlerKind.RequestResponse && info.InputTypeSymbol is not null && info.OutputTypeSymbol is not null)
         {
             return $"""
                 // {info.ImplementationTypeSymbol}
@@ -54,7 +57,7 @@ public sealed class HandlerDependencyInjectionBuilder : CodeFileBuilderBase
                     {info.OutputTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalFullName)}>();
 """;
         }
-        if (info.Kind == HandlerKind.Request)
+        if (info.HandlerKind == HandlerKind.Request && info.InputTypeSymbol is not null)
         {
             return $"""
                 // {info.ImplementationTypeSymbol}
@@ -63,7 +66,7 @@ public sealed class HandlerDependencyInjectionBuilder : CodeFileBuilderBase
                     {info.InputTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalFullName)}>();
 """;
         }
-        if (info.Kind == HandlerKind.Notification)
+        if (info.HandlerKind == HandlerKind.Notification && info.InputTypeSymbol is not null)
         {
             return $"""
                 // {info.ImplementationTypeSymbol}

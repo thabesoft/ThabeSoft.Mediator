@@ -32,11 +32,11 @@ public class Benchmark
     {
         // ThabeSoft
         var thabesoftServices = new ServiceCollection();
-        thabesoftServices.BuildMediator(ServiceLifetime.Singleton);
-        thabesoftServices.AddMediatorMiddlewares(x => x.All().Singleton());
+        thabesoftServices.AddMediator(ServiceLifetime.Singleton);
+        thabesoftServices.AddMediatorPipelineBehaviors(x => x.All().Singleton());
         thabesoftServices.AddMediatorHandlers(x =>
         {
-            x.Requests<PingRequest, PongResponse>().Singleton();
+            x.AddRequestHandler<PingPongHandler, PingRequest, PongResponse>().Singleton();
         });
         _thabeSoftMediator = thabesoftServices.BuildServiceProvider().GetRequiredService<ThabeSoftMediator>();
 

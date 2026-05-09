@@ -33,9 +33,7 @@ public static class TypeParserExtensiosn
     /// <returns></returns>
     public static AttributeData? GetAttributeData(this INamedTypeSymbol classSymbol, string attributeFullName)
     {
-        var attributes = classSymbol.GetAttributes();
-
-        foreach (var att in attributes)
+        foreach (var att in classSymbol.GetAttributes())
         {
             var att_full_name = att.AttributeClass?.ToDisplayString();
             if (att_full_name == attributeFullName) return att;

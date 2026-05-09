@@ -17,22 +17,22 @@ public class DependencyInjectionTests
         Assert.IsNotNull(sp.GetService<IMediator>());
     }
 
-    [TestMethod(DisplayName = "自动处理器到Ioc容器")]
+    [TestMethod(DisplayName = "注册处理器")]
     public void AddHandlers_ShouldAutoRegister()
     {
         var services = new ServiceCollection();
-        //services.AddMediatorHandlers();        
+        services.AddMediatorHandlers();
 
         var sp = services.BuildServiceProvider();
         var handler = sp.GetService<IRequestHandler<PingRequest, PongResponse>>();
         Assert.IsNotNull(handler);
     }
 
-    [TestMethod(DisplayName = "自动处理器到Ioc容器")]
+    [TestMethod(DisplayName = "注册管道行为")]
     public void AddHandlers_AAAShouldAutoRegister()
     {
         var services = new ServiceCollection();
-        //services.AddMediatorMiddlewares();
+        services.AddMediatorPipelineBehaviors();
 
         var sp = services.BuildServiceProvider();
         var handler = sp.GetService<IRequestPipelineBehavior<PingRequest, PongResponse>>();

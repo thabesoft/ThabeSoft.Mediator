@@ -2,9 +2,8 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Immutable;
+using ThabeSoft.Mediator.SourceGenerator.Builders;
 using ThabeSoft.Mediator.SourceGenerator.Models;
-using ThabeSoft.Mediator.SourceGenerator.Services.Builders;
-using ThabeSoft.Mediator.SourceGenerator.Services.Parsers;
 
 namespace ThabeSoft.Mediator.SourceGenerator;
 
@@ -12,29 +11,22 @@ namespace ThabeSoft.Mediator.SourceGenerator;
 [Generator]
 public class SourceGenerator : IIncrementalGenerator
 {
-    private readonly ITypeParser[] _typeParsers;
-    private readonly ICodeFileBuilder[] _codeFileBuilders;
+    private readonly CodeFileBuilderBase[] _codeFileBuilders;
 
     public SourceGenerator()
     {
-        _typeParsers =
-        [
-            new RequestHandlerTypeParser(),
-            new MiddlewareTypeParser()
-        ];
-
         _codeFileBuilders =
         [
             new HandlerDependencyInjectionBuilder(),
             new SenderExtensionsCodeFileBuilder(),
-            new MiddlewareDependencyInjectionBuilder()
+            new PipelineBehaviorDependencyInjectionBuilder()
         ];
     }
 
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        System.Diagnostics.Debugger.Launch();
+        //System.Diagnostics.Debugger.Launch();
 
         var handlers = context.SyntaxProvider
           .CreateSyntaxProvider(
@@ -64,30 +56,21 @@ public class SourceGenerator : IIncrementalGenerator
     }
 
     // 获取类型信息
-    private List<ITypeInfo> GetTypeInfo(GeneratorSyntaxContext ctx, CancellationToken cancellation)
+    private IEnumerable<TypeRegistration> GetTypeInfo(GeneratorSyntaxContext ctx, CancellationToken cancellation)
     {
         var classDeclaration = (TypeDeclarationSyntax)ctx.Node;
         var declaration_symbol = ctx.SemanticModel.GetDeclaredSymbol(classDeclaration);
-        if (declaration_symbol is not INamedTypeSymbol class_symbol) return [];
-
-        List<ITypeInfo> infos = [];
+        if (declaration_symbol is not INamedTypeSymbol class_symbol) yield break;
 
         foreach (var interface_symbol in class_symbol.AllInterfaces)
         {
-            foreach (var parser in _typeParsers)
-            {
-                if (!parser.TryParse(interface_symbol, class_symbol, out var info)) continue;
-                if (info is null) continue;
-
-                infos.Add(info);
-            }
+            if (!TypeRegistration.TryCreate(interface_symbol, class_symbol, out var info)) continue;
+            yield return info!;
         }
-
-        return infos;
     }
 
     // 生成代码
-    private void GenerateCode(SourceProductionContext context, ImmutableArray<ITypeInfo> typeInfos)
+    private void GenerateCode(SourceProductionContext context, ImmutableArray<TypeRegistration> typeInfos)
     {
         var valid_handlers = typeInfos.Distinct().ToList();
         if (valid_handlers.Count == 0) return;

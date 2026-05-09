@@ -1,7 +1,7 @@
 ﻿using ThabeSoft.Mediator.SourceGenerator.Extensions;
 using ThabeSoft.Mediator.SourceGenerator.Models;
 
-namespace ThabeSoft.Mediator.SourceGenerator.Services.Builders;
+namespace ThabeSoft.Mediator.SourceGenerator.Builders;
 
 
 /// <summary>
@@ -17,11 +17,16 @@ public sealed class SenderExtensionsCodeFileBuilder : CodeFileBuilderBase
         AddUsingNamespace("System.Threading.Tasks");
     }
 
-    protected override string BuildContentStatements(IReadOnlyCollection<ITypeInfo> typeTnfos)
+    protected override string BuildContentStatements(IReadOnlyCollection<TypeRegistration> infos)
     {
-        var handler_infos = typeTnfos.OfType<HandlerInfo>().ToArray();
-        var statements = handler_infos.Select(GenerateInjectionCode).Where(x => !string.IsNullOrEmpty(x));
-        var statements_code = string.Join($"{NewLine}{NewLine}", statements);
+        var statements = infos
+            .Where(x => x.Kind == TypeRegistrationKind.Handler)
+            .Select(GenerateInjectionCode)
+            .Where(x => !string.IsNullOrEmpty(x));
+
+        var statements_code = string.Join(NewLine + NewLine, statements);
+        if (string.IsNullOrWhiteSpace(statements_code)) return string.Empty;
+
 
         return $$"""
     public static class MediatorExtensions
@@ -31,9 +36,9 @@ public sealed class SenderExtensionsCodeFileBuilder : CodeFileBuilderBase
 """;
     }
 
-    private static string GenerateInjectionCode(HandlerInfo info)
+    private static string GenerateInjectionCode(TypeRegistration info)
     {
-        if (info.Kind == HandlerKind.RequestResponse && info.OutputTypeSymbol is not null)
+        if (info.HandlerKind == HandlerKind.RequestResponse && info.InputTypeSymbol is not null && info.OutputTypeSymbol is not null)
         {
             return $$"""
         // {{info.InputTypeSymbol}}

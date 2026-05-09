@@ -1,21 +1,12 @@
 ﻿using ThabeSoft.Mediator.SourceGenerator.Models;
 
-namespace ThabeSoft.Mediator.SourceGenerator.Services.Builders;
+namespace ThabeSoft.Mediator.SourceGenerator.Builders;
 
-
-/// <summary>
-/// 代码文件构建器
-/// </summary>
-public interface ICodeFileBuilder
-{
-    string FileName { get; }
-    string Build(IReadOnlyCollection<ITypeInfo> typeInfos);
-}
 
 /// <summary>
 /// 代码文件构建
 /// </summary>
-public abstract class CodeFileBuilderBase(string fileName, string @namespace) : ICodeFileBuilder
+public abstract class CodeFileBuilderBase(string fileName, string @namespace)
 {
     protected const string NewLine = "\r\n";
 
@@ -44,15 +35,15 @@ public abstract class CodeFileBuilderBase(string fileName, string @namespace) : 
 
 
     // 生成内容
-    protected abstract string BuildContentStatements(IReadOnlyCollection<ITypeInfo> typeTnfos);
+    protected abstract string BuildContentStatements(IReadOnlyCollection<TypeRegistration> infos);
 
 
     /// <summary>
     /// 构建代码, 如果没有生成返回 <see cref="string.Empty"/>
     /// </summary>
-    public virtual string Build(IReadOnlyCollection<ITypeInfo> typeTnfos)
+    public virtual string Build(IReadOnlyCollection<TypeRegistration> infos)
     {
-        var content_code = BuildContentStatements(typeTnfos);
+        var content_code = BuildContentStatements(infos);
         if (string.IsNullOrWhiteSpace(content_code)) return string.Empty;
 
         var header_code = BuildFileHeadStatements(DateTime.Now);
