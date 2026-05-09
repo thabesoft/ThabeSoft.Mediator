@@ -34,7 +34,7 @@ public class SourceGenerator : IIncrementalGenerator
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        //System.Diagnostics.Debugger.Launch();
+        System.Diagnostics.Debugger.Launch();
 
         var handlers = context.SyntaxProvider
           .CreateSyntaxProvider(

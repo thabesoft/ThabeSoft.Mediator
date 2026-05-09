@@ -1,4 +1,5 @@
-﻿using ThabeSoft.Mediator.SourceGenerator.Models;
+﻿using ThabeSoft.Mediator.SourceGenerator.Extensions;
+using ThabeSoft.Mediator.SourceGenerator.Models;
 
 namespace ThabeSoft.Mediator.SourceGenerator.Services.Builders;
 
@@ -20,25 +21,21 @@ public sealed class HandlerDependencyInjectionBuilder : CodeFileBuilderBase
     protected override string BuildContentStatements(IReadOnlyCollection<ITypeInfo> typeTnfos)
     {
         var _handlers = typeTnfos.OfType<HandlerInfo>().ToArray();
-        if (_handlers.Length <= 0) return string.Empty;
+        if (_handlers.Length == 0) return string.Empty;
 
         // 处理器
         var statements = _handlers.Select(GenerateRegisterStatements).Where(x => !string.IsNullOrEmpty(x));
-        var statements_code = string.Join($"{NewLine}{NewLine}", statements);
+        var statements_code = string.Join(NewLine + NewLine, statements);
 
         return $$"""
     internal static class ThabeSoftMediatorHandlerDependencyInjectionExtensions
     {
         public static void AddMediatorHandlers(this IServiceCollection services, Action<IDescriptorCollection>? optionAction = null)
         {
-            var handler_descriptors = new DescriptorCollection();
-
+            services.ConfigureMediator(x =>
+            {
 {{statements_code}}
-
-            optionAction?.Invoke(handler_descriptors);
-
-            var service_descriptors = handler_descriptors.BuildToServiceDescriptors();
-            foreach (var service_descriptor in service_descriptors) services.TryAddEnumerable(service_descriptor);
+            });
         }
     }
 """;
@@ -47,32 +44,32 @@ public sealed class HandlerDependencyInjectionBuilder : CodeFileBuilderBase
     // 生成处理器注册代码
     private static string GenerateRegisterStatements(HandlerInfo info)
     {
-        if (info.Kind == HandlerKind.RequestResponse)
+        if (info.Kind == HandlerKind.RequestResponse && info.OutputTypeSymbol is not null)
         {
             return $"""
-            // {info.ImplementationTypeSymbol}
-            handler_descriptors.AddRequest<
-                {info.ImplementationTypeSymbol},
-                {info.InputTypeSymbol},
-                {info.OutputTypeSymbol}>();
+                // {info.ImplementationTypeSymbol}
+                x.AddRequestHandler<
+                    {info.ImplementationTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalFullName)},
+                    {info.InputTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalFullName)},
+                    {info.OutputTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalFullName)}>();
 """;
         }
         if (info.Kind == HandlerKind.Request)
         {
             return $"""
-            // {info.ImplementationTypeSymbol}
-            handler_descriptors.AddRequest<
-                {info.ImplementationTypeSymbol},
-                {info.InputTypeSymbol}>();
+                // {info.ImplementationTypeSymbol}
+                x.AddRequestHandler<
+                    {info.ImplementationTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalFullName)},
+                    {info.InputTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalFullName)}>();
 """;
         }
         if (info.Kind == HandlerKind.Notification)
         {
             return $"""
-            // {info.ImplementationTypeSymbol}
-            handler_descriptors.AddNotification<
-                {info.ImplementationTypeSymbol},
-                {info.InputTypeSymbol}>();
+                // {info.ImplementationTypeSymbol}
+                x.AddNotificationHandler<
+                    {info.ImplementationTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalFullName)},
+                    {info.InputTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalFullName)}>();
 """;
         }
 

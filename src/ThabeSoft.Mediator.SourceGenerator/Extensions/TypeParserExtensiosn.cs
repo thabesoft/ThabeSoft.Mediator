@@ -5,13 +5,24 @@ namespace ThabeSoft.Mediator.SourceGenerator.Extensions;
 public static class TypeParserExtensiosn
 {
     /// <summary>
-    ///  业务显示格式  名字空间.类型 (不包含泛型, 如: ThabeSoft.Mediator.IRequesthandler
+    /// 不包含泛型的全名称, 如 global::ThabeSoft.Mediator.IRequesthandler
     /// </summary>
-    public static SymbolDisplayFormat NonGenericFullNameFormat { get; } = new
+    public static SymbolDisplayFormat GlobalNonGenericFullName { get; } = new
     (
+        globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Included,
         typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
         genericsOptions: SymbolDisplayGenericsOptions.None
     );
+
+    /// <summary>
+    /// 全名, 如 global::ThabeSoft.Mediator.SourceGenerator.Extensions.TypeParserExtensiosn
+    /// </summary>
+    public static SymbolDisplayFormat GlobalFullName { get; } = new
+    (
+        globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Included,
+        typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces
+    );
+
 
 
     /// <summary>

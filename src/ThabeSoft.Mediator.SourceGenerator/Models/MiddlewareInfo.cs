@@ -39,7 +39,7 @@ public sealed record class MiddlewareInfo : TypeInfoBase
         if (type_args.Length != 1) return false;
         if (type_args[0] is not ITypeParameterSymbol) return false;
 
-        var name = serviceTypeFullName.ToDisplayString(TypeParserExtensiosn.NonGenericFullNameFormat);
+        var name = serviceTypeFullName.ToDisplayString(TypeParserExtensiosn.GlobalNonGenericFullName);
         if (name != ServiceNonGenericFullName) return false;
 
         handlerInfo = new MiddlewareInfo(
@@ -65,7 +65,7 @@ public sealed record class MiddlewareInfo : TypeInfoBase
         if (type_args[0] is not ITypeParameterSymbol) return false;
         if (type_args[0] is not ITypeParameterSymbol) return false;
 
-        var name = serviceTypeFullName.ToDisplayString(TypeParserExtensiosn.NonGenericFullNameFormat);
+        var name = serviceTypeFullName.ToDisplayString(TypeParserExtensiosn.GlobalNonGenericFullName);
         if (name != ServiceNonGenericFullName) return false;
 
         handlerInfo = new MiddlewareInfo(

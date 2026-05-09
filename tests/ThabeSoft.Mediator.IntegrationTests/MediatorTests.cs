@@ -24,9 +24,8 @@ public class MediatorTests
     public void Setup()
     {
         var services = new ServiceCollection();
-        services.BuildMediator();
-        services.AddMediatorHandlers();
-        services.AddMediatorMiddlewares();
+        services.AddMediator();
+        services.AddMediator();
 
         RootProvider = services.BuildServiceProvider();
     }
@@ -61,7 +60,7 @@ public class MediatorTests
         };
         var results = new ConcurrentBag<PongResponse>();
 
-        await Parallel.ForEachAsync(Enumerable.Range(0, count), options, async (i, ct) =>
+        await Parallel.ForEachAsync(Enumerable.Range(0, count), options, async (i, _) =>
         {
             var ping_id = i;
             var result = await mediator.SendAsync(new PingRequest(ping_id), TestContext.CancellationToken);
@@ -88,7 +87,7 @@ public class MediatorTests
         {
             MaxDegreeOfParallelism = maxDegreeOfParallelism
         };
-        await Parallel.ForEachAsync(Enumerable.Range(0, count), options, async (i, ct) =>
+        await Parallel.ForEachAsync(Enumerable.Range(0, count), options, async (i, _) =>
         {
             int user_id = i;
             await mediator.SendAsync(new DeleteRequest(user_id), TestContext.CancellationToken);
@@ -112,7 +111,7 @@ public class MediatorTests
         {
             MaxDegreeOfParallelism = maxDegreeOfParallelism
         };
-        await Parallel.ForEachAsync(Enumerable.Range(0, count), options, async (i, ct) =>
+        await Parallel.ForEachAsync(Enumerable.Range(0, count), options, async (i, _) =>
         {
             int id = i;
             switch (Random.Shared.Next(3))

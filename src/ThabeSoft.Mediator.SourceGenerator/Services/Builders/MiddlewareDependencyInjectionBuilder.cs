@@ -1,12 +1,10 @@
-﻿using ThabeSoft.Mediator.SourceGenerator.Extensions;
+﻿using Microsoft.CodeAnalysis;
+using ThabeSoft.Mediator.SourceGenerator.Extensions;
 using ThabeSoft.Mediator.SourceGenerator.Models;
 
 namespace ThabeSoft.Mediator.SourceGenerator.Services.Builders;
 
 
-/// <summary>
-/// 
-/// </summary>
 internal class MiddlewareDependencyInjectionBuilder : CodeFileBuilderBase
 {
     public MiddlewareDependencyInjectionBuilder() : base(
@@ -32,16 +30,12 @@ internal class MiddlewareDependencyInjectionBuilder : CodeFileBuilderBase
         return $$"""
     internal static class ThabeSoftMiddlewareDependencyInjectionExtensions
     {
-        public static void AddMediatorMiddlewares(this IServiceCollection services, Action<IDescriptorCollection>? optionAction = null)
+        public static void AddMediatorBehaviors(this IServiceCollection services, Action<IDescriptorCollection>? optionAction = null)
         {
-            var middleware_descriptors = new DescriptorCollection();
-
+            services.ConfigureMediator(x =>
+            {
 {{statements_code}}
-
-            optionAction?.Invoke(middleware_descriptors);
-
-            var service_descriptors = middleware_descriptors.BuildToServiceDescriptors();
-            foreach (var service_descriptor in service_descriptors) services.TryAddEnumerable(service_descriptor);
+            });
         }
     }
 """;
@@ -50,26 +44,36 @@ internal class MiddlewareDependencyInjectionBuilder : CodeFileBuilderBase
     // 生成处理器注册代码
     private static string GenerateRegisterStatements(MiddlewareInfo middlewareInfo, HandlerInfo handlerInfo)
     {
-        if (middlewareInfo.Kind == HandlerKind.RequestResponse && handlerInfo.Kind == HandlerKind.RequestResponse)
+        if (middlewareInfo.Kind == HandlerKind.RequestResponse && handlerInfo.OutputTypeSymbol is not null)
         {
             return $"""
-            // {middlewareInfo.Kind}
-            middleware_descriptors.AddRequestMiddleware<
-                {middlewareInfo.ImplementationTypeSymbol.ToDisplayString(TypeParserExtensiosn.NonGenericFullNameFormat)}<
-                    {handlerInfo.InputTypeSymbol},
-                    {handlerInfo.OutputTypeSymbol}>,
-                {handlerInfo.InputTypeSymbol},
-                {handlerInfo.OutputTypeSymbol}>();
+                // {middlewareInfo.Kind}
+                x.AddRequestBehavior<
+                    {middlewareInfo.ImplementationTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalNonGenericFullName)}<
+                        {handlerInfo.InputTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalFullName)},
+                        {handlerInfo.OutputTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalFullName)}>,
+                    {handlerInfo.InputTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalFullName)},
+                    {handlerInfo.OutputTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalFullName)}>();
 """;
         }
-        if (middlewareInfo.Kind == HandlerKind.Request && handlerInfo.Kind == HandlerKind.Request)
+        if (middlewareInfo.Kind == HandlerKind.Request)
         {
             return $"""
-            // {middlewareInfo.Kind}
-            middleware_descriptors.AddRequestMiddleware<
-                {middlewareInfo.ImplementationTypeSymbol.ToDisplayString(TypeParserExtensiosn.NonGenericFullNameFormat)}<
-                    {handlerInfo.InputTypeSymbol}>,
-                {handlerInfo.InputTypeSymbol}>();
+                // {middlewareInfo.Kind}
+                x.AddRequestBehavior<
+                    {middlewareInfo.ImplementationTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalNonGenericFullName)}<
+                        {handlerInfo.InputTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalFullName)}>,
+                    {handlerInfo.InputTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalFullName)}>();
+""";
+        }
+        if (middlewareInfo.Kind == HandlerKind.Notification)
+        {
+            return $"""
+                // {middlewareInfo.Kind}
+                x.AddNotificationBehavior<
+                    {middlewareInfo.ImplementationTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalNonGenericFullName)}<
+                        {handlerInfo.InputTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalFullName)}>,
+                    {handlerInfo.InputTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalFullName)}>();
 """;
         }
 

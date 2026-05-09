@@ -11,7 +11,7 @@ public class DependencyInjectionTests
     public void AddMediator_ShouldRegisterMediator()
     {
         var services = new ServiceCollection();
-        services.BuildMediator();
+        services.AddMediator();
 
         var sp = services.BuildServiceProvider();
         Assert.IsNotNull(sp.GetService<IMediator>());
@@ -21,8 +21,7 @@ public class DependencyInjectionTests
     public void AddHandlers_ShouldAutoRegister()
     {
         var services = new ServiceCollection();
-        services.AddMediatorHandlers();
-        
+        //services.AddMediatorHandlers();        
 
         var sp = services.BuildServiceProvider();
         var handler = sp.GetService<IRequestHandler<PingRequest, PongResponse>>();
@@ -33,10 +32,10 @@ public class DependencyInjectionTests
     public void AddHandlers_AAAShouldAutoRegister()
     {
         var services = new ServiceCollection();
-        services.AddMediatorMiddlewares();
+        //services.AddMediatorMiddlewares();
 
         var sp = services.BuildServiceProvider();
-        var handler = sp.GetService<IMiddleware<PingRequest, PongResponse>>();
+        var handler = sp.GetService<IRequestPipelineBehavior<PingRequest, PongResponse>>();
         Assert.IsNotNull(handler);
     }
 }

@@ -1,4 +1,5 @@
-﻿using ThabeSoft.Mediator.SourceGenerator.Models;
+﻿using ThabeSoft.Mediator.SourceGenerator.Extensions;
+using ThabeSoft.Mediator.SourceGenerator.Models;
 
 namespace ThabeSoft.Mediator.SourceGenerator.Services.Builders;
 
@@ -32,18 +33,18 @@ public sealed class SenderExtensionsCodeFileBuilder : CodeFileBuilderBase
 
     private static string GenerateInjectionCode(HandlerInfo info)
     {
-        if (info.Kind == HandlerKind.RequestResponse)
+        if (info.Kind == HandlerKind.RequestResponse && info.OutputTypeSymbol is not null)
         {
             return $$"""
         // {{info.InputTypeSymbol}}
-        public static ValueTask<{{info.OutputTypeSymbol}}> SendAsync(
+        public static ValueTask<{{info.OutputTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalFullName)}}> SendAsync(
             this ISender sender,
             {{info.InputTypeSymbol}} request,
             CancellationToken cancellationToken = default)
         {
             return sender.SendAsync<
-                {{info.InputTypeSymbol}},
-                {{info.OutputTypeSymbol}}>
+                {{info.InputTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalFullName)}},
+                {{info.OutputTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalFullName)}}>
                 (request, cancellationToken);
         }
 """;

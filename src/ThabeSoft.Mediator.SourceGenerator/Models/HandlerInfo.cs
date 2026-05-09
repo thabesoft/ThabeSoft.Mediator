@@ -52,7 +52,7 @@ public sealed record class HandlerInfo : TypeInfoBase
         if (type_args.Length != 1) return false;
         if (type_args[0] is not INamedTypeSymbol req_type_symbol) return false;
 
-        var name = serviceTypeSymbol.ToDisplayString(TypeParserExtensiosn.NonGenericFullNameFormat);
+        var name = serviceTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalNonGenericFullName);
         if (name != RequesServiceNonFullName) return false;
 
         handlerInfo = new HandlerInfo(
@@ -76,7 +76,7 @@ public sealed record class HandlerInfo : TypeInfoBase
         if (type_args[0] is not INamedTypeSymbol req_type_symbol) return false;
         if (type_args[1] is not INamedTypeSymbol resp_type_symbol) return false;
 
-        var name = serviceTypeSymbol.ToDisplayString(TypeParserExtensiosn.NonGenericFullNameFormat);
+        var name = serviceTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalNonGenericFullName);
         if (name != RequesServiceNonFullName) return false;
 
         handlerInfo = new HandlerInfo(
@@ -99,7 +99,7 @@ public sealed record class HandlerInfo : TypeInfoBase
 
         if (type_args[0] is not INamedTypeSymbol notify_type_symbol) return false;
 
-        var name = serviceTypeSymbol.ToDisplayString(TypeParserExtensiosn.NonGenericFullNameFormat);
+        var name = serviceTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalNonGenericFullName);
         if (name != NoficationServiceNonFullName) return false;
 
         handlerInfo = new HandlerInfo(

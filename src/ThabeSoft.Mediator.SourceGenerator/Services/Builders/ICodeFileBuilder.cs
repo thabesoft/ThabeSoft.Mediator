@@ -30,7 +30,6 @@ public abstract class CodeFileBuilderBase(string fileName, string @namespace) : 
     /// <summary>
     /// 添加名字空间
     /// </summary>
-    /// <param name="namespace"></param>
     protected void AddUsingNamespace(string @namespace)
     {
         _using_namespaces.Add(@namespace);
@@ -38,7 +37,6 @@ public abstract class CodeFileBuilderBase(string fileName, string @namespace) : 
     /// <summary>
     /// 设置名字空间
     /// </summary>
-    /// <param name="namespace"></param>
     protected void SetNamespace(string @namespace)
     {
         Namesapce = @namespace;
@@ -52,8 +50,6 @@ public abstract class CodeFileBuilderBase(string fileName, string @namespace) : 
     /// <summary>
     /// 构建代码, 如果没有生成返回 <see cref="string.Empty"/>
     /// </summary>
-    /// <param name="generatorName"></param>
-    /// <returns></returns>
     public virtual string Build(IReadOnlyCollection<ITypeInfo> typeTnfos)
     {
         var content_code = BuildContentStatements(typeTnfos);
