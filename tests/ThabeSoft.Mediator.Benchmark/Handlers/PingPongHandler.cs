@@ -11,15 +11,16 @@ public sealed class PingPongHandler :
     DispatchR.Abstractions.Send.IRequestHandler<TRequest, ValueTask<TResponse>>,
     Concordia.IRequestHandler<TRequest, TResponse>
 {
-    private static ValueTask<TResponse> ValueHandleAsync(TRequest request, CancellationToken cancellationToken)
+    private static async ValueTask<TResponse> ValueHandleAsync(TRequest request, CancellationToken cancellationToken)
     {
-        var result = new TResponse($"Pong: {DateTime.Now}");
-        return ValueTask.FromResult(result);
+        await Task.Delay(1, cancellationToken);
+        return new TResponse($"Pong: {DateTime.Now}");
     }
-    private static Task<TResponse> HandleAsync(TRequest request, CancellationToken cancellationToken)
+
+    private static async Task<TResponse> HandleAsync(TRequest request, CancellationToken cancellationToken)
     {
-        var result = new TResponse($"Pong: {DateTime.Now}");
-        return Task.FromResult(result);
+        await Task.Delay(1, cancellationToken);
+        return new TResponse($"Pong: {DateTime.Now}");
     }
 
     // ThabeSoft

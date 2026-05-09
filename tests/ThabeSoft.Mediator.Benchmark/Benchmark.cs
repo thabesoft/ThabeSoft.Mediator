@@ -33,11 +33,7 @@ public class Benchmark
         // ThabeSoft
         var thabesoftServices = new ServiceCollection();
         thabesoftServices.AddMediator(ServiceLifetime.Singleton);
-        thabesoftServices.AddGeneratedMediator(x =>
-        {
-            x.All().Singleton();
-            x.AddRequestHandler<PingPongHandler, PingRequest, PongResponse>().Singleton();
-        });
+        thabesoftServices.AddGeneratedMediator();
         _thabeSoftMediator = thabesoftServices.BuildServiceProvider().GetRequiredService<ThabeSoftMediator>();
 
 
@@ -62,14 +58,14 @@ public class Benchmark
     }
 
     [Benchmark(Baseline = true)]
-    public async Task<PongResponse> ThabeSoft()
-        => await _thabeSoftMediator.SendAsync(new PingRequest()).AsTask();
+    public ValueTask<PongResponse> ThabeSoft()
+        => _thabeSoftMediator.SendAsync(new PingRequest());
 
     [Benchmark]
-    public async Task<PongResponse> MediatR()
-        => await _mediatorMediator.Send(new PingRequest());
+    public Task<PongResponse> MediatR()
+        => _mediatorMediator.Send(new PingRequest());
 
     [Benchmark]
-    public async Task<PongResponse> Concordia()
-        => await _concordiaMediator.Send(new PingRequest(), default);
+    public Task<PongResponse> Concordia()
+        => _concordiaMediator.Send(new PingRequest(), default);
 }

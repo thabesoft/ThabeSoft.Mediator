@@ -22,7 +22,7 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-	  <ProjectReference Include="..\..\ThabeSoft.Mediator.Contracts\ThabeSoft.Mediator.Contracts.csproj" />
+	  <ProjectReference Include="..\ThabeSoft.Mediator.Contracts\ThabeSoft.Mediator.Contracts.csproj" />
 	</ItemGroup>
 
 </Project>

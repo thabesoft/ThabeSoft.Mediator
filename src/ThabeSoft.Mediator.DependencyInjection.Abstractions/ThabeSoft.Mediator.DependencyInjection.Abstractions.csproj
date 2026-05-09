@@ -13,7 +13,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\src\ThabeSoft.Mediator.Abstractions\ThabeSoft.Mediator.Abstractions.csproj" />
+	  <ProjectReference Include="..\ThabeSoft.Mediator.Abstractions\ThabeSoft.Mediator.Abstractions.csproj" />
 	</ItemGroup>
 
 </Project>

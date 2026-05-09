@@ -7,6 +7,6 @@
   <Project Path="src/ThabeSoft.Mediator.Abstractions/ThabeSoft.Mediator.Abstractions.csproj" />
   <Project Path="src/ThabeSoft.Mediator.SourceGenerator/ThabeSoft.Mediator.SourceGenerator.csproj" />
   <Project Path="src/ThabeSoft.Mediator/ThabeSoft.Mediator.csproj" />
-  <Project Path="ThabeSoft.Mediator.Contracts/ThabeSoft.Mediator.Contracts.csproj" Id="380a7cf4-841a-493f-92f2-ee5fdc31a448" />
-  <Project Path="ThabeSoft.Mediator.DependencyInjection.Abstractions/ThabeSoft.Mediator.DependencyInjection.Abstractions.csproj" Id="ad91a946-996c-4390-9d3c-e825b53ce1da" />
+  <Project Path="src/ThabeSoft.Mediator.Contracts/ThabeSoft.Mediator.Contracts.csproj" Id="380a7cf4-841a-493f-92f2-ee5fdc31a448" />
+  <Project Path="src/ThabeSoft.Mediator.DependencyInjection.Abstractions/ThabeSoft.Mediator.DependencyInjection.Abstractions.csproj" Id="ad91a946-996c-4390-9d3c-e825b53ce1da" />
 </Solution>

@@ -24,8 +24,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\ThabeSoft.Mediator.DependencyInjection.Abstractions\ThabeSoft.Mediator.DependencyInjection.Abstractions.csproj" />
 	  <ProjectReference Include="..\ThabeSoft.Mediator.Abstractions\ThabeSoft.Mediator.Abstractions.csproj" />
+	  <ProjectReference Include="..\ThabeSoft.Mediator.DependencyInjection.Abstractions\ThabeSoft.Mediator.DependencyInjection.Abstractions.csproj" />
 	</ItemGroup>
 
 </Project>
