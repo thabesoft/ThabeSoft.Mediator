@@ -17,8 +17,9 @@ public class SourceGenerator : IIncrementalGenerator
     {
         _codeFileBuilders =
         [
-            new HandlerDependencyInjectionBuilder(),
             new SenderExtensionsCodeFileBuilder(),
+            new DependencyInjectionBuilder(),
+            new HandlerDependencyInjectionBuilder(),
             new PipelineBehaviorDependencyInjectionBuilder()
         ];
     }

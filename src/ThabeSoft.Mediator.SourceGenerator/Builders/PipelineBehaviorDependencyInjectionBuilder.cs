@@ -37,7 +37,7 @@ internal class PipelineBehaviorDependencyInjectionBuilder : CodeFileBuilderBase
 
 
         return $$"""
-    internal static class ThabeSoftMiddlewareDependencyInjectionExtensions
+    internal static partial class ThabeSoftMediatorDependencyInjectionExtensions
     {
         public static void AddMediatorPipelineBehaviors(this IServiceCollection services, Action<IDescriptorCollection>? optionAction = null)
         {

@@ -7,10 +7,10 @@ namespace ThabeSoft.Mediator.SourceGenerator.Builders;
 /// <summary>
 /// 处理器依赖注入
 /// </summary>
-public sealed class HandlerDependencyInjectionBuilder : CodeFileBuilderBase
+public sealed class DependencyInjectionBuilder : CodeFileBuilderBase
 {
-    public HandlerDependencyInjectionBuilder() : base(
-        fileName: "HandlerDependencyInjection.g.cs",
+    public DependencyInjectionBuilder() : base(
+        fileName: "DependencyInjection.g.cs",
         @namespace:"Microsoft.Extensions.DependencyInjection")
     {
         AddUsingNamespace("Microsoft.Extensions.DependencyInjection.Extensions");
@@ -33,12 +33,10 @@ public sealed class HandlerDependencyInjectionBuilder : CodeFileBuilderBase
         return $$"""
     internal static partial class ThabeSoftMediatorDependencyInjectionExtensions
     {
-        public static void AddMediatorHandlers(this IServiceCollection services, Action<IDescriptorCollection>? optionAction = null)
+        public static void AddGeneratedMediator(this IServiceCollection services, Action<IDescriptorCollection>? optionAction = null)
         {
-            services.ConfigureMediator(x =>
-            {
-{{statements_code}}
-            });
+            services.AddMediatorHandlers(optionAction);
+            services.AddMediatorPipelineBehaviors(optionAction);
         }
     }
 """;
