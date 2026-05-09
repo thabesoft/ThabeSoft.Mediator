@@ -1,4 +1,6 @@
-﻿namespace ThabeSoft.Mediator.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+
+namespace ThabeSoft.Mediator.DependencyInjection;
 
 
 /// <summary>
@@ -20,9 +22,7 @@ public interface IDescriptorBatch
     /// <summary>
     /// 批量设置生命周期
     /// </summary>
-    /// <param name="lifetime"></param>
-    /// <returns></returns>
-    IDescriptorBatch SetLifetime(LifetimeKind lifetime);
+    IDescriptorBatch SetLifetime(ServiceLifetime? lifetime);
 }
 
 
@@ -32,33 +32,30 @@ public interface IDescriptorBatch
 public static class DescriptorBatchExtensions
 {
     // 硬编码 API
-    extension(IDescriptorBatch batch) 
+    extension(IDescriptorBatch batch)
     {
         /// <summary>
         /// 设置为作用域生命周期
         /// </summary>
-        /// <returns></returns>
         public IDescriptorBatch Scoped()
         {
-            return batch.SetLifetime(LifetimeKind.Scoped);
+            return batch.SetLifetime(ServiceLifetime.Scoped);
         }
 
         /// <summary>
         /// 设置为单例生命周期
         /// </summary>
-        /// <returns></returns>
         public IDescriptorBatch Singleton()
         {
-            return batch.SetLifetime(LifetimeKind.Singleton);
+            return batch.SetLifetime(ServiceLifetime.Singleton);
         }
 
         /// <summary>
         /// 设置为瞬态生命周期
         /// </summary>
-        /// <returns></returns>
         public IDescriptorBatch Transient()
         {
-            return batch.SetLifetime(LifetimeKind.Transient);
+            return batch.SetLifetime(ServiceLifetime.Transient);
         }
     }
 }

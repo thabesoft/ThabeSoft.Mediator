@@ -2,17 +2,17 @@
 
 
 /// <summary>
-/// 中间件类型
+/// 业务描述种类
 /// </summary>
-public enum MiddlewareKind : byte
+public enum DescriptorKind : byte
 {
     /// <summary>
-    /// 开放类型
+    /// 处理器
     /// </summary>
-    Request,
+    Handler,
 
     /// <summary>
-    /// 封闭类型
+    /// 管道行为
     /// </summary>
-    RequestResponse,
+    Behavior,
 }

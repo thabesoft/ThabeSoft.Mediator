@@ -11,7 +11,7 @@ public class DependencyInjectionTests
     public void AddMediator_ShouldRegisterMediator()
     {
         var services = new ServiceCollection();
-        services.AddMediator();
+        services.BuildMediator();
 
         var sp = services.BuildServiceProvider();
         Assert.IsNotNull(sp.GetService<IMediator>());

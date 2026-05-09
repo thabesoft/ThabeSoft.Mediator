@@ -24,7 +24,7 @@ public class MediatorTests
     public void Setup()
     {
         var services = new ServiceCollection();
-        services.AddMediator();
+        services.BuildMediator();
         services.AddMediatorHandlers();
         services.AddMediatorMiddlewares();
 

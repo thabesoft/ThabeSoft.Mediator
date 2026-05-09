@@ -1,4 +1,6 @@
-﻿namespace ThabeSoft.Mediator.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+
+namespace ThabeSoft.Mediator.DependencyInjection;
 
 
 /// <summary>
@@ -6,64 +8,73 @@
 /// </summary>
 public sealed class DescriptorBuilder : IDescriptorBuilder
 {
-    private readonly DescriptorCollection root;
+    private readonly DescriptorCollection _root;
 
     private DescriptorBuilder(
         DescriptorCollection root,
+        DescriptorKind kind,
         Type serviceType,
         Type implementationType,
-        HandlerKind kind,
+        HandlerKind handlerKind,
         Type messageType,
         Type? messageResponseType = null
         )
     {
-        this.root = root;
+        _root = root;
+        Kind = kind;
         ServiceType = serviceType;
         ImplementationType = implementationType;
-        HandlerKind = kind;
+        HandlerKind = handlerKind;
         InputType = messageType;
         OutputType = messageResponseType;
     }
 
+    public DescriptorKind Kind { get; }
     public Type ServiceType { get; }
     public Type ImplementationType { get; }
     public HandlerKind HandlerKind { get; }
     public Type InputType { get; }
     public Type? OutputType { get; }
-    public LifetimeKind Lifetime { get; private set; }
+    public ServiceLifetime? Lifetime { get; private set; }
 
 
-    public static DescriptorBuilder Request<THandler, TRequest>(DescriptorCollection root)
+    public static DescriptorBuilder RequestHandler<THandler, TRequest>(DescriptorCollection root)
         where THandler : IRequestHandler<TRequest>
         where TRequest : IRequest
     {
-        return new DescriptorBuilder(root, typeof(IRequestHandler<TRequest>), typeof(THandler), HandlerKind.Request, typeof(TRequest));
+        return new DescriptorBuilder(root, DescriptorKind.Handler, typeof(IRequestHandler<TRequest>), typeof(THandler), HandlerKind.Request, typeof(TRequest));
     }
-    public static DescriptorBuilder Request<THandler, TRequest, TResponse>(DescriptorCollection root)
+    public static DescriptorBuilder RequestHandler<THandler, TRequest, TResponse>(DescriptorCollection root)
         where THandler : IRequestHandler<TRequest, TResponse>
         where TRequest : IRequest<TResponse>
     {
-        return new DescriptorBuilder(root, typeof(IRequestHandler<TRequest, TResponse>), typeof(THandler), HandlerKind.RequestResponse, typeof(TRequest), typeof(TResponse));
+        return new DescriptorBuilder(root, DescriptorKind.Handler, typeof(IRequestHandler<TRequest, TResponse>), typeof(THandler), HandlerKind.RequestResponse, typeof(TRequest), typeof(TResponse));
     }
-    public static DescriptorBuilder Notification<THandler, TNotification>(DescriptorCollection root)
+    public static DescriptorBuilder NotificationHandler<THandler, TNotification>(DescriptorCollection root)
         where THandler : INotificationHandler<TNotification>
         where TNotification : INotification
     {
-        return new DescriptorBuilder(root, typeof(INotificationHandler<TNotification>), typeof(THandler), HandlerKind.Notification, typeof(TNotification));
+        return new DescriptorBuilder(root, DescriptorKind.Handler, typeof(INotificationHandler<TNotification>), typeof(THandler), HandlerKind.Notification, typeof(TNotification));
     }
 
 
-    public static DescriptorBuilder RequestMiddlewar<THandler, TRequest>(DescriptorCollection root)
-        where THandler : IMiddleware<TRequest>
+    public static DescriptorBuilder RequestBehavior<TBehavior, TRequest>(DescriptorCollection root)
+        where TBehavior : IRequestPipelineBehavior<TRequest>
         where TRequest : IRequest
     {
-        return new DescriptorBuilder(root, typeof(IMiddleware<TRequest>), typeof(THandler), HandlerKind.Request, typeof(TRequest));
+        return new DescriptorBuilder(root, DescriptorKind.Behavior, typeof(IRequestPipelineBehavior<TRequest>), typeof(TBehavior), HandlerKind.Request, typeof(TRequest));
     }
-    public static DescriptorBuilder RequestMiddlewar<THandler, TRequest, TResponse>(DescriptorCollection root)
-        where THandler : IMiddleware<TRequest, TResponse>
+    public static DescriptorBuilder RequestBehavior<TBehavior, TRequest, TResponse>(DescriptorCollection root)
+        where TBehavior : IRequestPipelineBehavior<TRequest, TResponse>
         where TRequest : IRequest<TResponse>
     {
-        return new DescriptorBuilder(root, typeof(IMiddleware<TRequest, TResponse>), typeof(THandler), HandlerKind.RequestResponse, typeof(TRequest), typeof(TResponse));
+        return new DescriptorBuilder(root, DescriptorKind.Behavior, typeof(IRequestPipelineBehavior<TRequest, TResponse>), typeof(TBehavior), HandlerKind.RequestResponse, typeof(TRequest), typeof(TResponse));
+    }
+    public static DescriptorBuilder NotificationBehavior<TBehavior, TNotification>(DescriptorCollection root)
+        where TBehavior : INotificationPipelineBehavior<TNotification>
+        where TNotification : INotification
+    {
+        return new DescriptorBuilder(root, DescriptorKind.Behavior, typeof(INotificationPipelineBehavior<TNotification>), typeof(TBehavior), HandlerKind.Notification, typeof(TNotification));
     }
 
 
@@ -73,7 +84,7 @@ public sealed class DescriptorBuilder : IDescriptorBuilder
     /// </summary>
     /// <param name="lifetime"></param>
     /// <returns></returns>
-    public IDescriptorBuilder SetLifetime(LifetimeKind lifetime)
+    public IDescriptorBuilder SetLifetime(ServiceLifetime? lifetime)
     {
         Lifetime = lifetime;
         return this;
@@ -84,8 +95,8 @@ public sealed class DescriptorBuilder : IDescriptorBuilder
     /// <returns></returns>
     public IDescriptorCollection Except()
     {
-        root.ExceptAll(x => x.Equals(this));
-        return root;
+        _root.ExceptAll(x => x.Equals(this));
+        return _root;
     }
     /// <summary>
     /// 返回上一级
@@ -93,7 +104,7 @@ public sealed class DescriptorBuilder : IDescriptorBuilder
     /// <returns></returns>
     public IDescriptorCollection Back()
     {
-        return root;
+        return _root;
     }
 
 
@@ -102,8 +113,9 @@ public sealed class DescriptorBuilder : IDescriptorBuilder
     /// </summary>
     /// <param name="obj"></param>
     /// <returns></returns>
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
+        if (obj is null) return false;
         if (ReferenceEquals(this, obj)) return true;
         if (obj is not IDescriptorBuilder other) return false;
 
@@ -125,7 +137,7 @@ public sealed class DescriptorBuilder : IDescriptorBuilder
     /// <returns></returns>
     public override string ToString()
     {
-        if (Lifetime == LifetimeKind.None)
+        if (Lifetime is null)
         {
             return $"{ServiceType}[{Lifetime}]";
         }

@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ThabeSoft.Mediator.DependencyInjection;
 using ThabeSoft.Mediator.UnitTests.Datas;
-using ThabeSoft.Mediator.UnitTests.Requests;
 
 namespace ThabeSoft.Mediator.UnitTests;
 
@@ -13,7 +12,7 @@ namespace ThabeSoft.Mediator.UnitTests;
 public class HandlerBuildTests
 {
     public static Type RequestHandlerServiceType { get; } = typeof(IRequestHandler<Request>);
-    public static Type ResultRequestHandlerServiceType { get; } = typeof(IRequestHandler<ResultRequest, Response>);
+    public static Type ResultRequestHandlerServiceType { get; } = typeof(IRequestHandler<RequestResponse, Response>);
     public static Type NotificationHandlerServiceType { get; } = typeof(INotificationHandler<Notification>);
 
 
@@ -24,53 +23,14 @@ public class HandlerBuildTests
         (HandlerKind.Notification, NotificationHandlerServiceType)
     ];
 
-
-    [TestMethod(DisplayName = "添加请求-响应处理器")]
-    public void AddRequest()
-    {
-        var collection = new HandlerDescriptorCollection();
-        IHandlerDescriptorCollection builder = collection;
-        builder
-            .Batch(x => true).Scoped().Apply() // 所有元素改作用域
-            .All().Scoped().Apply()            // 所有元素改作用域
-            .Requests().Except().Apply()       // 所有请求 排除
-            .Notifications().Singleton().Apply() // 所有通知 改 单例
-            .Singleton().Transient().Apply();    // 所有单例 改 瞬态
-
-        var descriptors = collection.BuildToServiceDescriptors();
-        Assert.HasCount(1, descriptors);
-
-        var descriptor = descriptors.First();
-        Assert.AreEqual(typeof(IRequestHandler<ResultRequest, Response>), descriptor.ServiceType);
-        Assert.AreEqual(typeof(ResultRequestHandler), descriptor.ImplementationType);
-        Assert.AreEqual(collection.DefaultLifetime, descriptor.Lifetime);
-    }
-
-
-
     #region -- 添加处理器 --
 
 
-    [TestMethod(DisplayName = "添加请求-响应处理器")]
-    public void AddRequest_Handler_Request_Response()
-    {
-        var collection = new HandlerDescriptorCollection();
-        collection.AddRequest<ResultRequestHandler, ResultRequest, Response>();
-
-        var descriptors = collection.BuildToServiceDescriptors();
-        Assert.HasCount(1, descriptors);
-
-        var descriptor = descriptors.First();
-        Assert.AreEqual(typeof(IRequestHandler<ResultRequest, Response>), descriptor.ServiceType);
-        Assert.AreEqual(typeof(ResultRequestHandler), descriptor.ImplementationType);
-        Assert.AreEqual(collection.DefaultLifetime, descriptor.Lifetime);
-    }
-
     [TestMethod(DisplayName = "添加请求处理器")]
-    public void AddRequest_Handler_Request()
+    public void AddRequestHandler_TRequest()
     {
-        var collection = new HandlerDescriptorCollection();
-        collection.AddRequest<RequestHandler, Request>();
+        var collection = new DescriptorCollection();
+        collection.AddRequestHandler<RequestHandler, Request>();
 
         var descriptors = collection.BuildToServiceDescriptors();
         Assert.HasCount(1, descriptors);
@@ -81,11 +41,26 @@ public class HandlerBuildTests
         Assert.AreEqual(collection.DefaultLifetime, descriptor.Lifetime);
     }
 
-    [TestMethod(DisplayName = "添加通知处理器")]
-    public void AddNotification_Handler_Notification()
+    [TestMethod(DisplayName = "添加请求-响应处理器")]
+    public void AddRequestHandler_TRequest_TResponse()
     {
-        var collection = new HandlerDescriptorCollection();
-        collection.AddNotification<NotificationHandler, Notification>();
+        var collection = new DescriptorCollection();
+        collection.AddRequestHandler<RequestResponseHandler, RequestResponse, Response>();
+
+        var descriptors = collection.BuildToServiceDescriptors();
+        Assert.HasCount(1, descriptors);
+
+        var descriptor = descriptors.First();
+        Assert.AreEqual(typeof(IRequestHandler<RequestResponse, Response>), descriptor.ServiceType);
+        Assert.AreEqual(typeof(RequestResponseHandler), descriptor.ImplementationType);
+        Assert.AreEqual(collection.DefaultLifetime, descriptor.Lifetime);
+    }
+
+    [TestMethod(DisplayName = "添加通知处理器")]
+    public void AddNotificationHandler_TNotification()
+    {
+        var collection = new DescriptorCollection();
+        collection.AddNotificationHandler<NotificationHandler, Notification>();
 
         var descriptors = collection.BuildToServiceDescriptors();
         Assert.HasCount(1, descriptors);
@@ -98,6 +73,58 @@ public class HandlerBuildTests
 
     #endregion
 
+    #region -- 添加管道行为 --
+
+
+    [TestMethod(DisplayName = "添加请求管道行为")]
+    public void AddRequestBehavior_TRequest()
+    {
+        var collection = new DescriptorCollection();
+        collection.AddRequestBehavior<RequestPipelineBehavior, Request>();
+
+        var descriptors = collection.BuildToServiceDescriptors();
+        Assert.HasCount(1, descriptors);
+
+        var descriptor = descriptors.First();
+        Assert.AreEqual(typeof(IRequestPipelineBehavior<Request>), descriptor.ServiceType);
+        Assert.AreEqual(typeof(RequestPipelineBehavior), descriptor.ImplementationType);
+        Assert.AreEqual(collection.DefaultLifetime, descriptor.Lifetime);
+    }
+
+    [TestMethod(DisplayName = "添加请求-响应管道行为")]
+    public void AddRequestBehavior_TRequest_TResponse()
+    {
+        var collection = new DescriptorCollection();
+        collection.AddRequestBehavior<RequestResponsePipelineBehavior, RequestResponse, Response>();
+
+        var descriptors = collection.BuildToServiceDescriptors();
+        Assert.HasCount(1, descriptors);
+
+        var descriptor = descriptors.First();
+        Assert.AreEqual(typeof(IRequestPipelineBehavior<RequestResponse, Response>), descriptor.ServiceType);
+        Assert.AreEqual(typeof(RequestResponsePipelineBehavior), descriptor.ImplementationType);
+        Assert.AreEqual(collection.DefaultLifetime, descriptor.Lifetime);
+    }
+
+    
+
+    [TestMethod(DisplayName = "添加通知管道行为")]
+    public void AddRequestBehavior_TNotification()
+    {
+        var collection = new DescriptorCollection();
+        collection.AddNotificationBehavior<NotificationPipelineBehavior, Notification>();
+
+        var descriptors = collection.BuildToServiceDescriptors();
+        Assert.HasCount(1, descriptors);
+
+        var descriptor = descriptors.First();
+        Assert.AreEqual(typeof(INotificationPipelineBehavior<Notification>), descriptor.ServiceType);
+        Assert.AreEqual(typeof(NotificationPipelineBehavior), descriptor.ImplementationType);
+        Assert.AreEqual(collection.DefaultLifetime, descriptor.Lifetime);
+    }
+
+    #endregion
+
 
     #region -- 基础设置 --
 
@@ -105,10 +132,9 @@ public class HandlerBuildTests
     [DataRow(ServiceLifetime.Singleton, DisplayName = "单例")]
     [DataRow(ServiceLifetime.Transient, DisplayName = "瞬态")]
     [TestMethod(DisplayName = "更改默认生命周期")]
-    public void SetDefaultLifetime(ServiceLifetime serviceLifetime)
+    public void Default(ServiceLifetime serviceLifetime)
     {
-        var collection = new HandlerDescriptorCollection();
-
+        var collection = new DescriptorCollection();
         collection.Default(serviceLifetime);
 
         Assert.AreEqual(serviceLifetime, collection.DefaultLifetime);
@@ -126,13 +152,13 @@ public class HandlerBuildTests
     [TestMethod(DisplayName = "根据条件更新")]
     public void UpdateAll(HandlerKind kind, ServiceLifetime serviceLifetime)
     {
-        var collection = new HandlerDescriptorCollection();
-        collection.AddRequest<RequestHandler, Request>();
-        collection.AddRequest<ResultRequestHandler, ResultRequest, Response>();
-        collection.AddNotification<NotificationHandler, Notification>();
+        var collection = new DescriptorCollection();
+        collection.AddRequestHandler<RequestHandler, Request>();
+        collection.AddRequestHandler<RequestResponseHandler, RequestResponse, Response>();
+        collection.AddNotificationHandler<NotificationHandler, Notification>();
 
 
-        collection.Update(x => x.HandlerKind == kind, x => x.SetLifetime(serviceLifetime));
+        collection.UpdateAll(x => x.HandlerKind == kind, x => x.SetLifetime(serviceLifetime));
 
         // Assert
         var descriptors = collection.BuildToServiceDescriptors().ToList();
@@ -153,13 +179,13 @@ public class HandlerBuildTests
     [TestMethod(DisplayName = "根据条件排除")]
     public void ExceptAll(HandlerKind kind)
     {
-        var collection = new HandlerDescriptorCollection();
-        collection.AddRequest<RequestHandler, Request>();
-        collection.AddRequest<ResultRequestHandler, ResultRequest, Response>();
-        collection.AddNotification<NotificationHandler, Notification>();
+        var collection = new DescriptorCollection();
+        collection.AddRequestHandler<RequestHandler, Request>();
+        collection.AddRequestHandler<RequestResponseHandler, RequestResponse, Response>();
+        collection.AddNotificationHandler<NotificationHandler, Notification>();
 
 
-        collection.Except(x => x.HandlerKind == kind);
+        collection.ExceptAll(x => x.HandlerKind == kind);
 
         // Assert
         var descriptors = collection.BuildToServiceDescriptors().ToList();
@@ -181,10 +207,10 @@ public class HandlerBuildTests
     [TestMethod(DisplayName = "根据条件查询")]
     public void FindAll(HandlerKind kind, ServiceLifetime serviceLifetime)
     {
-        var collection = new HandlerDescriptorCollection();
-        collection.AddRequest<RequestHandler, Request>();
-        collection.AddRequest<ResultRequestHandler, ResultRequest, Response>();
-        collection.AddNotification<NotificationHandler, Notification>();
+        var collection = new DescriptorCollection();
+        collection.AddRequestHandler<RequestHandler, Request>();
+        collection.AddRequestHandler<RequestResponseHandler, RequestResponse, Response>();
+        collection.AddNotificationHandler<NotificationHandler, Notification>();
 
 
         collection.Batch(x => x.HandlerKind == kind)

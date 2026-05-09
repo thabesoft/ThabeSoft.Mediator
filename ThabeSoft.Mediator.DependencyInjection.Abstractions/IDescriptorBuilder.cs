@@ -1,12 +1,18 @@
-﻿namespace ThabeSoft.Mediator.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+
+namespace ThabeSoft.Mediator.DependencyInjection;
 
 
 /// <summary>
 /// 描述构建器
 /// </summary>
-/// <typeparam name="TParent"></typeparam>
 public interface IDescriptorBuilder
 {
+    /// <summary>
+    /// 种类
+    /// </summary>
+    DescriptorKind Kind { get; }
+
     /// <summary>
     /// 业务类型
     /// </summary>
@@ -30,7 +36,7 @@ public interface IDescriptorBuilder
     /// <summary>
     /// 处理器生命周期
     /// </summary>
-    LifetimeKind Lifetime { get; }
+    ServiceLifetime? Lifetime { get; }
 
     /// <summary>
     /// 处理器类型
@@ -40,9 +46,7 @@ public interface IDescriptorBuilder
     /// <summary>
     /// 设置生命周期
     /// </summary>
-    /// <param name="lifetime"></param>
-    /// <returns></returns>
-    IDescriptorBuilder SetLifetime(LifetimeKind lifetime);
+    IDescriptorBuilder SetLifetime(ServiceLifetime? lifetime);
 
     /// <summary>
     /// 跟容器
@@ -52,7 +56,6 @@ public interface IDescriptorBuilder
     /// <summary>
     /// 从跟容器排除自己
     /// </summary>
-    /// <returns></returns>
     IDescriptorCollection Except();
 }
 
@@ -70,7 +73,7 @@ public static class DescriptorBuilderExtensions
         /// <returns></returns>
         public IDescriptorBuilder Scoped()
         {
-            return descriptor.SetLifetime(LifetimeKind.Scoped);
+            return descriptor.SetLifetime(ServiceLifetime.Scoped);
         }
 
         /// <summary>
@@ -79,7 +82,7 @@ public static class DescriptorBuilderExtensions
         /// <returns></returns>
         public IDescriptorBuilder Singleton()
         {
-            return descriptor.SetLifetime(LifetimeKind.Singleton);
+            return descriptor.SetLifetime(ServiceLifetime.Singleton);
         }
 
         /// <summary>
@@ -88,7 +91,7 @@ public static class DescriptorBuilderExtensions
         /// <returns></returns>
         public IDescriptorBuilder Transient()
         {
-            return descriptor.SetLifetime(LifetimeKind.Transient);
+            return descriptor.SetLifetime(ServiceLifetime.Transient);
         }
 
         /// <summary>
@@ -97,7 +100,7 @@ public static class DescriptorBuilderExtensions
         /// <returns></returns>
         public IDescriptorBuilder None()
         {
-            return descriptor.SetLifetime(LifetimeKind.None);
+            return descriptor.SetLifetime(null);
         }
     }
 }

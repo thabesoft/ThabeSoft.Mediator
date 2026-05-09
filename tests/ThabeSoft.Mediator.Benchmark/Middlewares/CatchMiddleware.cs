@@ -16,11 +16,11 @@ public sealed class CatchMiddleware<TRequest, TResponse> :
         Concordia.IRequest<TResponse>
 {
     // ThabeSoft
-    ValueTask<TResponse> IMiddleware<TRequest, TResponse>.InvokeAsync(TRequest request, NextMiddleware<TRequest, TResponse> next, CancellationToken cancellationToken)
+    ValueTask<TResponse> IMiddleware<TRequest, TResponse>.InvokeAsync(TRequest request, RequestHandlerDelegateObsolete<TRequest, TResponse> next, CancellationToken cancellationToken)
         => next(request, cancellationToken);
 
     //MediatR
-    Task<TResponse> IPipelineBehavior<TRequest, TResponse>.Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+    Task<TResponse> IRequestPipelineBehavior<TRequest, TResponse>.Handle(TRequest request, MediatR.RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
         return next(cancellationToken);
     }

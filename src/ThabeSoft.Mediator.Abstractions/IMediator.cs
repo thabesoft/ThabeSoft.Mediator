@@ -3,4 +3,4 @@
 /// <summary>
 /// 中介者
 /// </summary>
-public partial interface IMediator : ISender, IPublisher;
+public interface IMediator : ISender, IPublisher;

@@ -1,7 +1,7 @@
-﻿using Moq;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using ThabeSoft.Mediator.DependencyInjection;
 using ThabeSoft.Mediator.UnitTests.Datas;
-using ThabeSoft.Mediator.UnitTests.Requests;
 
 namespace ThabeSoft.Mediator.UnitTests;
 
@@ -14,22 +14,37 @@ public class MediatorTests
     [TestMethod(DisplayName = "请求-响应")]
     public async Task SendAsync_Request_Response()
     {
-        var mockHandler = new Mock<IRequestHandler<ResultRequest, Response>>();
+        ServiceCollection services = new();
+        services.AddMediator();
+        services.ConfigureMediator(x =>
+        {
+            x.AddRequestBehavior<RequestPipelineBehavior, Request>();
+            x.AddRequestBehavior<RequestResponsePipelineBehavior, RequestResponse, Response>();
+            x.AddNotificationBehavior<NotificationPipelineBehavior, Notification>();
+
+            x.AddRequestHandler<RequestHandler, Request>();
+            x.AddRequestHandler<RequestResponseHandler, RequestResponse, Response>();
+            x.AddNotificationHandler<NotificationHandler, Notification>();
+        });
+        services.ConfigureMediator(x => x.AddNotificationBehavior<NotificationPipelineBehavior, Notification>());
+        services.ConfigureMediator(x => x.Behavior().Except());
+
+        var mockHandler = new Mock<IRequestHandler<RequestResponse, Response>>();
         var expectedResponse = new Response(123);
 
         mockHandler
-            .Setup(x => x.HandleAsync(It.IsAny<ResultRequest>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.HandleAsync(It.IsAny<RequestResponse>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedResponse);
 
         var serviceProvider = new Mock<IServiceProvider>();
         serviceProvider
-            .Setup(x => x.GetService(typeof(IRequestHandler<ResultRequest, Response>)))
+            .Setup(x => x.GetService(typeof(IRequestHandler<RequestResponse, Response>)))
             .Returns(mockHandler.Object);
 
         var mediator = new Mediator(serviceProvider.Object);
-        var request = new ResultRequest(123);
+        var request = new RequestResponse(123);
 
-        var response = await mediator.SendAsync<ResultRequest, Response>(request, TestContext.CancellationToken);
+        var response = await mediator.SendAsync<RequestResponse, Response>(request, TestContext.CancellationToken);
 
         Assert.AreEqual(expectedResponse.PingId, response.PingId);
         mockHandler.Verify(x => x.HandleAsync(request, It.IsAny<CancellationToken>()), Times.Once);
@@ -38,14 +53,14 @@ public class MediatorTests
     [TestMethod(DisplayName = "请求-响应-取消令牌")]
     public async Task SendAsync_Request_Response_WhenCancelled_ShouldThrow()
     {
-        var mockHandler = new Mock<IRequestHandler<ResultRequest, Response>>();
+        var mockHandler = new Mock<IRequestHandler<RequestResponse, Response>>();
         mockHandler
-            .Setup(x => x.HandleAsync(It.IsAny<ResultRequest>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.HandleAsync(It.IsAny<RequestResponse>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new OperationCanceledException());
 
         var serviceProvider = new Mock<IServiceProvider>();
         serviceProvider
-            .Setup(x => x.GetService(typeof(IRequestHandler<ResultRequest, Response>)))
+            .Setup(x => x.GetService(typeof(IRequestHandler<RequestResponse, Response>)))
             .Returns(mockHandler.Object);
 
         var mediator = new Mediator(serviceProvider.Object);
@@ -54,7 +69,7 @@ public class MediatorTests
 
         // Act & Assert
         await Assert.ThrowsAsync<OperationCanceledException>(
-            async () => await mediator.SendAsync<ResultRequest, Response>(new ResultRequest(0), cts.Token)
+            async () => await mediator.SendAsync<RequestResponse, Response>(new RequestResponse(0), cts.Token)
         );
     }
 
@@ -65,7 +80,7 @@ public class MediatorTests
         var mediator = new Mediator(serviceProvider.Object);
 
         await Assert.ThrowsAsync<InvalidOperationException>(
-            async () => await mediator.SendAsync<ResultRequest, Response>(new ResultRequest(0), TestContext.CancellationToken)
+            async () => await mediator.SendAsync<RequestResponse, Response>(new RequestResponse(0), TestContext.CancellationToken)
         );
     }
 
@@ -75,7 +90,17 @@ public class MediatorTests
         var mediator = new Mediator(Mock.Of<IServiceProvider>());
 
         await Assert.ThrowsAsync<ArgumentNullException>(
-            async () => await mediator.SendAsync<ResultRequest, Response>(null!, TestContext.CancellationToken)
+            async () => await mediator.SendAsync<RequestResponse, Response>(null!, TestContext.CancellationToken)
+        );
+    }
+
+    [TestMethod(DisplayName = "请求-响应-null参数")]
+    public async Task SendAsync_TRequest_TResponse_WithNullRequest_ShouldThrow()
+    {
+        var mediator = new Mediator(Mock.Of<IServiceProvider>());
+
+        await Assert.ThrowsAsync<ArgumentNullException>(
+            async () => await mediator.SendAsync<RequestResponse, Response>(null!, TestContext.CancellationToken)
         );
     }
 
@@ -186,7 +211,7 @@ public class MediatorTests
     [TestMethod(DisplayName = "通知-null参数")]
     public async Task PublishAsync_Notification_WithNullNotification_ShouldThrow()
     {
-        HandlerDescriptorCollection handlerDescriptor = new();
+        DescriptorCollection handlerDescriptor = new();
 
         var mediator = new Mediator(Mock.Of<IServiceProvider>());
 

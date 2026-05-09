@@ -4,7 +4,7 @@
 
 sealed class CatchMiddleware<TRequest, TResponse> : IMiddleware<TRequest, TResponse>
 {
-    public async ValueTask<TResponse> InvokeAsync(TRequest message, NextMiddleware<TRequest, TResponse> next, CancellationToken cancellationToken = default)
+    public async ValueTask<TResponse> InvokeAsync(TRequest message, RequestHandlerDelegateObsolete<TRequest, TResponse> next, CancellationToken cancellationToken = default)
     {
         Console.Write("异常捕获开始{ ");
         TResponse result;

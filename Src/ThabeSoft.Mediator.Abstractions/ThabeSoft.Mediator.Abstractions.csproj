@@ -13,11 +13,16 @@
 	<PropertyGroup>
 		<Company>ThabeSoft</Company>
 		<Product>Mediator</Product>
-		<Version>1.0.0</Version>
+		<Version>0.1.0</Version>
 	</PropertyGroup>
+
+	<!-- 为不原生支持 ValueTask 的框架引入 NuGet 包 -->
+	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0' ">
+		<PackageReference Include="System.Threading.Tasks.Extensions" Version="4.6.3" />
+	</ItemGroup>
 	
 	<ItemGroup>
-	  <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.6.3" />
+	  <ProjectReference Include="..\..\ThabeSoft.Mediator.Contracts\ThabeSoft.Mediator.Contracts.csproj" />
 	</ItemGroup>
 
 </Project>

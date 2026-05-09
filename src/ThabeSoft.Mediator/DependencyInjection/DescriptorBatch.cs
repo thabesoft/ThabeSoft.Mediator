@@ -1,4 +1,6 @@
-﻿namespace ThabeSoft.Mediator.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+
+namespace ThabeSoft.Mediator.DependencyInjection;
 
 
 /// <summary>
@@ -11,7 +13,7 @@ public sealed class DescriptorBatch(
         Func<IDescriptorBuilder, bool> matcher
     ) :  IDescriptorBatch
 {
-    public IDescriptorBatch SetLifetime(LifetimeKind lifetime)
+    public IDescriptorBatch SetLifetime(ServiceLifetime? lifetime)
     {
         root.UpdateAll(matcher, x => x.SetLifetime(lifetime));
         return this;

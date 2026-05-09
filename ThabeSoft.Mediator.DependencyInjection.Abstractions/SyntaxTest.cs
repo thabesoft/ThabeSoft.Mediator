@@ -1,13 +1,15 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿#if DEBUG
+
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ThabeSoft.Mediator.DependencyInjection;
 
-public class SyntaxTest
+internal class SyntaxTest
 {
     public static void Hanlder(IDescriptorCollection option)
     {
-        option.Notifications().Singleton();
-        option.Requests().Scoped();
+        option.RequestHandler().Singleton();
+        option.RequestHandler().Scoped();
 
         option.Scoped().Singleton();
         option.Transient().Singleton();
@@ -18,6 +20,8 @@ public class SyntaxTest
 
     public static void Middleware(IDescriptorCollection option)
     {
-        option.Requests().Singleton();
+        option.RequestHandler().Singleton();
     }
 }
+
+#endif

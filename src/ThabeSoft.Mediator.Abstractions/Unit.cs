@@ -3,6 +3,7 @@
 /// <summary>
 /// 空单元
 /// </summary>
+[Obsolete]
 public sealed class Unit : IEquatable<Unit>
 {
     public static readonly Unit Value = new();

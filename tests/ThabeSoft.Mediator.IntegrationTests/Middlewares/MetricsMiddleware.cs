@@ -4,7 +4,7 @@ namespace ThabeSoft.Mediator.IntegrationTests.Middlewares;
 
 public sealed class MetricsMiddleware<TReq, TResp> : IMiddleware<TReq, TResp>
 {
-    public async ValueTask<TResp> InvokeAsync(TReq message, NextMiddleware<TReq, TResp> next, CancellationToken cancellationToken = default)
+    public async ValueTask<TResp> InvokeAsync(TReq message, RequestHandlerDelegateObsolete<TReq, TResp> next, CancellationToken cancellationToken = default)
     {
         var time = Stopwatch.GetTimestamp();
         Console.Write("计时开始{ ");
