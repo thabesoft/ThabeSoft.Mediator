@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ThabeSoft.Mediator.Benchmark.Generated;
 using ThabeSoft.Mediator.Benchmark.Handlers;
 using ThabeSoft.Mediator.Benchmark.Messages;
-using ThabeSoft.Mediator.Benchmark.Middlewares;
+using ThabeSoft.Mediator.Benchmark.PipelineBehaviors;
 using ThabeSoft.Mediator.DependencyInjection;
 using ConcordiaMediator = Concordia.IMediator;
 using DispatchRMediator = DispatchR.IMediator;
@@ -24,7 +24,7 @@ public class Benchmark
 {
     private ThabeSoftMediator _thabeSoftMediator = default!;
     private MediatorMediator _mediatorMediator = default!;
-    private DispatchRMediator _dispatchRMediator = default!;
+    //private readonly DispatchRMediator _dispatchRMediator = default!;
     private ConcordiaMediator _concordiaMediator = default!;
 
     [GlobalSetup]
@@ -33,9 +33,9 @@ public class Benchmark
         // ThabeSoft
         var thabesoftServices = new ServiceCollection();
         thabesoftServices.AddMediator(ServiceLifetime.Singleton);
-        thabesoftServices.AddMediatorPipelineBehaviors(x => x.All().Singleton());
-        thabesoftServices.AddMediatorHandlers(x =>
+        thabesoftServices.AddGeneratedMediator(x =>
         {
+            x.All().Singleton();
             x.AddRequestHandler<PingPongHandler, PingRequest, PongResponse>().Singleton();
         });
         _thabeSoftMediator = thabesoftServices.BuildServiceProvider().GetRequiredService<ThabeSoftMediator>();
@@ -48,8 +48,8 @@ public class Benchmark
         {
             cfg.Lifetime = ServiceLifetime.Singleton;
             cfg.RegisterServicesFromAssembly(typeof(Benchmark).Assembly);
- 
-            cfg.AddOpenBehavior(typeof(CatchMiddleware<,>));
+
+            cfg.AddOpenBehavior(typeof(PipelineBehavior<,>));
         });
         _mediatorMediator = mediatRServices.BuildServiceProvider().GetRequiredService<MediatorMediator>();
 

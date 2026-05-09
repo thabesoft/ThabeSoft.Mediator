@@ -23,8 +23,7 @@ public class MediatorTests
     {
         var services = new ServiceCollection();
         services.AddMediator();
-        services.AddMediatorHandlers();
-        services.AddMediatorPipelineBehaviors();
+        services.AddGeneratedMediator();
 
         RootProvider = services.BuildServiceProvider();
     }

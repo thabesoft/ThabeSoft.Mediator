@@ -1,10 +1,9 @@
 ﻿using MediatR;
 using ThabeSoft.Mediator.Benchmark.Messages;
 
-namespace ThabeSoft.Mediator.Benchmark.Middlewares;
+namespace ThabeSoft.Mediator.Benchmark.PipelineBehaviors;
 
-
-public sealed class CatchMiddleware<TRequest, TResponse> :
+public sealed class PipelineBehavior<TRequest, TResponse> :
     IRequestPipelineBehavior<TRequest, TResponse>,
     MediatR.IPipelineBehavior<TRequest, TResponse>,
     DispatchR.Abstractions.Send.IPipelineBehavior<TRequest, ValueTask<TResponse>>
@@ -12,8 +11,7 @@ public sealed class CatchMiddleware<TRequest, TResponse> :
     where TRequest : class,
         IRequest<TResponse>,
         MediatR.IRequest<TResponse>,
-        DispatchR.Abstractions.Send.IRequest<TRequest, ValueTask<TResponse>>,
-        Concordia.IRequest<TResponse>
+        DispatchR.Abstractions.Send.IRequest<TRequest, ValueTask<TResponse>>
 {
     // ThabeSoft
     ValueTask<TResponse> IRequestPipelineBehavior<TRequest, TResponse>.InvokeAsync(TRequest request, HandlerDelegate<TResponse> next, CancellationToken cancellationToken)
@@ -27,8 +25,13 @@ public sealed class CatchMiddleware<TRequest, TResponse> :
     public DispatchR.Abstractions.Send.IRequestHandler<TRequest, ValueTask<TResponse>> NextPipeline { get; set; } = default!;
     ValueTask<TResponse> DispatchR.Abstractions.Send.IRequestHandler<TRequest, ValueTask<TResponse>>.Handle(TRequest request, CancellationToken cancellationToken)
         => NextPipeline.Handle(request, cancellationToken);
+}
 
+
+
+public sealed class ConcordiaPipelineBehavior : Concordia.IPipelineBehavior<PingRequest, PongResponse>
+{
     // Concordia
-    public Task<PongResponse> Handle(PingRequest request, Concordia.RequestHandlerDelegate<PongResponse> next, CancellationToken cancellationToken)
+    Task<PongResponse> Concordia.IPipelineBehavior<PingRequest, PongResponse>.Handle(PingRequest request, Concordia.RequestHandlerDelegate<PongResponse> next, CancellationToken cancellationToken)
         => next(cancellationToken);
 }

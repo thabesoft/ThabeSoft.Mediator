@@ -30,7 +30,7 @@ public sealed class DependencyInjectionBuilder : CodeFileBuilderBase
         if (string.IsNullOrWhiteSpace(statements_code)) return string.Empty;
 
 
-        return $$"""
+        return """
     internal static partial class ThabeSoftMediatorDependencyInjectionExtensions
     {
         public static void AddGeneratedMediator(this IServiceCollection services, Action<IDescriptorCollection>? optionAction = null)

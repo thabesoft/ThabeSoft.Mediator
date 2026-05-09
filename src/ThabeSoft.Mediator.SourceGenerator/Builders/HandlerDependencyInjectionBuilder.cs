@@ -33,7 +33,7 @@ public sealed class HandlerDependencyInjectionBuilder : CodeFileBuilderBase
         return $$"""
     internal static partial class ThabeSoftMediatorDependencyInjectionExtensions
     {
-        public static void AddMediatorHandlers(this IServiceCollection services, Action<IDescriptorCollection>? optionAction = null)
+        private static void AddMediatorHandlers(this IServiceCollection services, Action<IDescriptorCollection>? optionAction = null)
         {
             services.ConfigureMediator(x =>
             {
