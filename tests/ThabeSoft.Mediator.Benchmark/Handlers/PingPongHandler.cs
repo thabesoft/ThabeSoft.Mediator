@@ -13,13 +13,13 @@ public sealed class PingPongHandler :
 {
     private static async ValueTask<TResponse> ValueHandleAsync(TRequest request, CancellationToken cancellationToken)
     {
-        await Task.Delay(1, cancellationToken);
+        await Task.Yield();
         return new TResponse($"Pong: {DateTime.Now}");
     }
 
     private static async Task<TResponse> HandleAsync(TRequest request, CancellationToken cancellationToken)
     {
-        await Task.Delay(1, cancellationToken);
+        await Task.Yield();
         return new TResponse($"Pong: {DateTime.Now}");
     }
 
