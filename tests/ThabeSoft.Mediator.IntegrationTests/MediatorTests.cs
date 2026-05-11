@@ -23,7 +23,6 @@ public class MediatorTests
     {
         var services = new ServiceCollection();
         services.AddMediator();
-        services.AddGeneratedMediator();
 
         RootProvider = services.BuildServiceProvider();
     }

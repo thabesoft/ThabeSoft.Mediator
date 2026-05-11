@@ -3,6 +3,7 @@
 /// <summary>
 /// 通知管道
 /// </summary>
+[Obsolete]
 internal struct NotifyPipeline<TNotification>(
         TNotification notification,
         INotificationHandler<TNotification> handler,

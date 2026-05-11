@@ -12,14 +12,11 @@ public sealed class Mediator(IServiceProvider services) : IMediator
     {
         if (request is null) throw new ArgumentNullException(nameof(request), "请求不可为空");
 
+        var pipeline = services.GetService<IRequestPipeline<TRequest>>();
+        if (pipeline is not null) return pipeline.InvokeAsync(request, cancellationToken);
+
         var handler = services.GetRequiredService<IRequestHandler<TRequest>>();
-        var behaviors = TryGetServices<IRequestPipelineBehavior<TRequest>>();
-
-        // 没有行为
-        if (behaviors.Length == 0) return handler.HandleAsync(request, cancellationToken);
-
-        var pipe_line = new RequestPipeline<TRequest>(request, handler, behaviors);
-        return pipe_line.InvokeAsync(cancellationToken);
+        return handler.HandleAsync(request, cancellationToken);
     }
 
     public ValueTask<TResponse> SendAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
@@ -28,17 +25,11 @@ public sealed class Mediator(IServiceProvider services) : IMediator
         if (request is null) throw new ArgumentNullException(nameof(request), "请求不可为空");
 
         // 获取管道
-        var pipeline = services.GetRequiredService<IRequestPipeline<TRequest, TResponse>>();
-        return pipeline.InvokeAsync(request, cancellationToken);
+        var pipeline = services.GetService<IRequestPipeline<TRequest, TResponse>>();
+        if (pipeline is not null) return pipeline.InvokeAsync(request, cancellationToken);
 
-        //var handler = services.GetRequiredService<IRequestHandler<TRequest, TResponse>>();
-        //var behaviors = TryGetServices<IRequestPipelineBehavior<TRequest, TResponse>>();
-
-        //// 没有行为
-        //if (behaviors.Length == 0) return handler.HandleAsync(request, cancellationToken);
-
-        //var pipe_line = new RequestPipeline<TRequest, TResponse>(request, handler, behaviors);
-        //return pipe_line.InvokeAsync(cancellationToken);
+        var handler = services.GetRequiredService<IRequestHandler<TRequest, TResponse>>();
+        return handler.HandleAsync(request, cancellationToken);
     }
 
     public ValueTask PublishAsync<TNotification>(TNotification notification, CancellationToken cancellationToken = default)
@@ -62,8 +53,11 @@ public sealed class Mediator(IServiceProvider services) : IMediator
         {
             var tasks = handlers.Select(handler =>
             {
-                var pipe_line = new NotifyPipeline<TNotification>(notification, handler, pipeline_behaviors);
-                return pipe_line.InvokeAsync(cancellationToken).AsTask();
+                var pipeline = services.GetRequiredService<INotificationPipeline<TNotification>>();
+                if (pipeline is not null) return pipeline.InvokeAsync(notification, cancellationToken).AsTask();
+
+                var handlera = services.GetRequiredService<INotificationHandler<TNotification>>();
+                return handler.HandleAsync(notification, cancellationToken).AsTask();
             });
 
             return new ValueTask(Task.WhenAll(tasks));

@@ -21,7 +21,7 @@ public class SourceGenerator : IIncrementalGenerator
             new DependencyInjectionBuilder(),
             new HandlerDependencyInjectionBuilder(),
             new PipelineBehaviorDependencyInjectionBuilder(),
-            new PipelineBehaviorDependencyInjectionBuilderV2()
+            new PipelineDependencyInjectionBuilder()
         ];
     }
 

@@ -39,12 +39,12 @@ public static class DependencyInjectionExtensions
         /// <summary>
         /// 添加自定义中介者
         /// </summary>
-        public IServiceCollection AddMediator<TMediator>(ServiceLifetime lifetime = ServiceLifetime.Scoped)
+        public IServiceCollection AddMediator<TMediator>(ServiceLifetime lifetime)
             where TMediator : class, IMediator
         {
-            services.TryAdd(new ServiceDescriptor(typeof(IMediator), typeof(TMediator), lifetime));
-            services.TryAdd(new ServiceDescriptor(typeof(ISender), sp => sp.GetRequiredService<IMediator>(), lifetime));
-            services.TryAdd(new ServiceDescriptor(typeof(IPublisher), sp => sp.GetRequiredService<IMediator>(), lifetime));
+            services.TryAddEnumerable(new ServiceDescriptor(typeof(IMediator), typeof(Mediator), lifetime));
+            services.Add(new ServiceDescriptor(typeof(ISender), sp => sp.GetRequiredService<IMediator>(), lifetime));
+            services.Add(new ServiceDescriptor(typeof(IPublisher), sp => sp.GetRequiredService<IMediator>(), lifetime));
 
             return services;
         }
@@ -52,7 +52,7 @@ public static class DependencyInjectionExtensions
         /// <summary>
         /// 添加默认中介者
         /// </summary>
-        public IServiceCollection AddMediator(ServiceLifetime lifetime = ServiceLifetime.Scoped)
+        public IServiceCollection AddMediator(ServiceLifetime lifetime)
         {
             return services.AddMediator<Mediator>(lifetime);
         }

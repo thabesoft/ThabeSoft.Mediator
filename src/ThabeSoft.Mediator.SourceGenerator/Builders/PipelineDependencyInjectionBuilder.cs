@@ -6,7 +6,7 @@ using ThabeSoft.Mediator.SourceGenerator.Models;
 namespace ThabeSoft.Mediator.SourceGenerator.Builders;
 
 
-internal class PipelineBehaviorDependencyInjectionBuilderV2 : ITypeSourceBuilder
+internal class PipelineDependencyInjectionBuilder : ITypeSourceBuilder
 {
     private static readonly string[] _usingNamespaces =
     [
@@ -130,10 +130,10 @@ internal class PipelineBehaviorDependencyInjectionBuilderV2 : ITypeSourceBuilder
             if(level == 1 && maxLevel == 1)
             {
                 return $$"""
-        public ValueTask<{{output_type_name}}> InvokeAsync({{input_type_name}} request, CancellationToken cancellation)
-        {
-            return handler.HandleAsync(request, cancellation);
-        }
+            public ValueTask<{{output_type_name}}> InvokeAsync({{input_type_name}} request, CancellationToken cancellation)
+            {
+                return handler.HandleAsync(request, cancellation);
+            }
 """;
             }
 
@@ -141,12 +141,12 @@ internal class PipelineBehaviorDependencyInjectionBuilderV2 : ITypeSourceBuilder
             if (level == 1 && maxLevel > 1)
             {
                 return $$"""
-        ValueTask<{{output_type_name}}> Level{{level}}(CancellationToken cancellation)
-        {
-            var result =  handler.HandleAsync(_request, cancellation);
-            Cleanup();
-            return result;
-        }
+            ValueTask<{{output_type_name}}> Level{{level}}(CancellationToken cancellation)
+            {
+                var result =  handler.HandleAsync(_request, cancellation);
+                Cleanup();
+                return result;
+            }
 """;
             }
 
@@ -154,32 +154,32 @@ internal class PipelineBehaviorDependencyInjectionBuilderV2 : ITypeSourceBuilder
             if (level > 1 && maxLevel == level)
             {
                 return $$"""
-        public ValueTask<{{output_type_name}}> InvokeAsync({{input_type_name}} request, CancellationToken cancellation)
-        {
-            // 请求
-            _request = request;
-                
-            if (_enumerator.MoveNext())
+            public ValueTask<{{output_type_name}}> InvokeAsync({{input_type_name}} request, CancellationToken cancellation)
             {
-                return _enumerator.Current.InvokeAsync(_request, Level{{level-1}}, cancellation);
-            }
+                // 请求
+                _request = request;
+                
+                if (_enumerator.MoveNext())
+                {
+                    return _enumerator.Current.InvokeAsync(_request, Level{{level-1}}, cancellation);
+                }
 
-            return handler.HandleAsync(_request, cancellation);
-        }
+                return handler.HandleAsync(_request, cancellation);
+            }
 """;
             }
 
             // 多个层级中间的
             return $$"""
-        ValueTask<{{output_type_name}}> Level{{level}}(CancellationToken cancellation)
-        {
-            if (_enumerator.MoveNext())
+            ValueTask<{{output_type_name}}> Level{{level}}(CancellationToken cancellation)
             {
-                return _enumerator.Current.InvokeAsync(_request, Level{{level - 1}}, cancellation);
-            }
+                if (_enumerator.MoveNext())
+                {
+                    return _enumerator.Current.InvokeAsync(_request, Level{{level - 1}}, cancellation);
+                }
 
-            return handler.HandleAsync(_request, cancellation);
-        }
+                return handler.HandleAsync(_request, cancellation);
+            }
 """;
         }
     }

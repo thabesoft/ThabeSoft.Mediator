@@ -7,6 +7,7 @@ namespace ThabeSoft.Mediator;
 /// <summary>
 /// 请求管道
 /// </summary>
+[Obsolete]
 internal class RequestPipeline<TRequest>(
         TRequest request,
         IRequestHandler<TRequest> handler,
@@ -41,6 +42,7 @@ internal class RequestPipeline<TRequest>(
 /// <summary>
 /// 请求管道
 /// </summary>
+[Obsolete]
 internal class RequestPipeline<TRequest, TResponse>(
         TRequest request,
         IRequestHandler<TRequest, TResponse> handler,

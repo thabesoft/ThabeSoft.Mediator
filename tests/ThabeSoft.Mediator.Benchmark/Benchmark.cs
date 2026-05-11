@@ -34,8 +34,7 @@ public class Benchmark
     {
         // ThabeSoft
         var thabesoftServices = new ServiceCollection();
-        thabesoftServices.AddMediator(ServiceLifetime.Singleton);
-        thabesoftServices.ConfiguredMediator(x => x.All().Singleton().Apply());
+        thabesoftServices.AddMediator(x => x.All().Singleton().Apply());
         _thabeSoftMediator = thabesoftServices.BuildServiceProvider().GetRequiredService<ThabeSoftMediator>();
 
 

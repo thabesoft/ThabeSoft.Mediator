@@ -1,4 +1,5 @@
-﻿using ThabeSoft.Mediator.SourceGenerator.Extensions;
+﻿using System.Xml.Linq;
+using ThabeSoft.Mediator.SourceGenerator.Extensions;
 using ThabeSoft.Mediator.SourceGenerator.Models;
 
 namespace ThabeSoft.Mediator.SourceGenerator.Builders;
@@ -32,23 +33,20 @@ public sealed class DependencyInjectionBuilder : ITypeSourceBuilder
 
     private static string BuildContent(IReadOnlyCollection<TypeRegistration> infos)
     {
-        var statements = infos.Where(x => x.Kind == TypeRegistrationKind.Handler)
-            .Distinct()
-            .Select(GetPipeline)
-            .Where(x => !string.IsNullOrEmpty(x))
-            .ToArray();
-
+        var statements = GetPipelines(infos).Where(x => !string.IsNullOrWhiteSpace(x));
         var statements_code = string.Join(TypeBuildExtensions.NewLine + TypeBuildExtensions.NewLine, statements);
-        if (string.IsNullOrWhiteSpace(statements_code)) return string.Empty;
-
 
         return $$"""
     internal static partial class ThabeSoftMediatorDependencyInjectionExtensions
     {
-        // 配置中介者
-        public static void ConfiguredMediator(this IServiceCollection services, Action<IDescriptorCollection>? optionAction = null)
+        // 添加中介者
+        public static void AddMediator(this IServiceCollection services, Action<IDescriptorCollection>? optionAction = null, ServiceLifetime mediatorLifetime = ServiceLifetime.Scoped)
         {
+            // 中介者
+            services.AddMediator(mediatorLifetime);
+            // 处理器
             services.AddMediatorHandlers(optionAction);
+            // 管道行为
             services.AddMediatorPipelineBehaviors(optionAction);
 
 {{statements_code}}
@@ -57,17 +55,20 @@ public sealed class DependencyInjectionBuilder : ITypeSourceBuilder
 """;
     }
 
-    private static string GetPipeline(TypeRegistration info)
+    private static IEnumerable<string> GetPipelines(IReadOnlyCollection<TypeRegistration> infos)
     {
-        if (info.Kind == TypeRegistrationKind.Handler)
+        foreach (var handler in infos.Distinct().Where(x => x.Kind == TypeRegistrationKind.Handler).ToArray())
         {
-            var method_name = PipelineBehaviorDependencyInjectionBuilderV2.GetPipelineClassName(info);
-            return $"""
-            // {info.ServiceTypeSymbol}
-            services.Add{method_name}();
+            var behaviors = infos.Where(x => x.Kind == TypeRegistrationKind.PipelineBehavior && x.HandlerKind == handler.HandlerKind).ToArray();
+            if (behaviors.Length == 0) continue;
+
+            var className = PipelineDependencyInjectionBuilder.GetPipelineClassName(handler);
+            if (string.IsNullOrWhiteSpace(className)) continue;
+
+            yield return $"""
+            // {handler.ServiceTypeSymbol}
+            services.Add{className}();
 """;
         }
-
-        return string.Empty;
     }
 }

@@ -15,7 +15,7 @@ public class MediatorTests
     public async Task SendAsync_Request_Response()
     {
         ServiceCollection services = new();
-        services.AddMediator();
+        services.AddMediator(ServiceLifetime.Singleton);
         services.ConfigureMediator(x =>
         {
             x.AddRequestBehavior<RequestPipelineBehavior, Request>();
