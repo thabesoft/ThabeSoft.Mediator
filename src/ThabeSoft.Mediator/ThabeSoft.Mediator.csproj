@@ -5,14 +5,47 @@
 		<LangVersion>preview</LangVersion>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		
+
+		<EnableNETAnalyzers>true</EnableNETAnalyzers>
+		<AnalysisLevel>latest</AnalysisLevel>
 	</PropertyGroup>
 
 	<!--包信息-->
 	<PropertyGroup>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+
+		<!-- 基础信息 -->
 		<Company>ThabeSoft</Company>
 		<Product>Mediator</Product>
-		<Version>1.0.0-preview.6</Version>
+		<Version>1.0.0</Version>
+
+		<!-- NuGet 包信息 -->
+		<Title>ThabeSoft.Mediator</Title>
+		<Description>一个基于源生成器的中介者模式实现</Description>
+		<Authors>DaThabe</Authors>
+		<PackageTags>mediator;cqs;abstractions;source-generator</PackageTags>
+
+		<!-- 链接 -->
+		<PackageProjectUrl>https://github.com/thabesoft/ThabeSoft.Mediator</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/thabesoft/ThabeSoft.Mediator</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+
+		<!-- 法律 -->
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<Copyright>Copyright © ThabeSoft 2026</Copyright>
+
+		<!-- 文档 -->
+		<!--<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>icon.png</PackageIcon>-->
+
+		<!-- 调试 -->
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+		<!-- 分析器 -->
+		
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -25,7 +58,6 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\ThabeSoft.Mediator.Abstractions\ThabeSoft.Mediator.Abstractions.csproj" />
-	  <ProjectReference Include="..\ThabeSoft.Mediator.DependencyInjection.Abstractions\ThabeSoft.Mediator.DependencyInjection.Abstractions.csproj" />
 	</ItemGroup>
 
 </Project>
