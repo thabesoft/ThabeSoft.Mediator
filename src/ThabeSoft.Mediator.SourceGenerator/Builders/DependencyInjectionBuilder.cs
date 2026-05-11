@@ -7,70 +7,64 @@ namespace ThabeSoft.Mediator.SourceGenerator.Builders;
 /// <summary>
 /// 处理器依赖注入
 /// </summary>
-public sealed class DependencyInjectionBuilder : CodeFileBuilderBase
+public sealed class DependencyInjectionBuilder : ITypeSourceBuilder
 {
-    public DependencyInjectionBuilder() : base(
-        fileName: "DependencyInjection.g.cs",
-        @namespace:"Microsoft.Extensions.DependencyInjection")
+    private readonly string _fileName = "DependencyInjection.g.cs";
+
+    private const string _namespace = "Microsoft.Extensions.DependencyInjection";
+
+    private static readonly string[] _usingNamespaces =
+    [
+        "Microsoft.Extensions.DependencyInjection.Extensions",
+        "ThabeSoft.Mediator",
+        "ThabeSoft.Mediator.DependencyInjection",
+        "ThabeSoft.Mediator.Generated",
+    ];
+
+
+    public void Build(Microsoft.CodeAnalysis.SourceProductionContext context, IReadOnlyCollection<TypeRegistration> infos)
     {
-        AddUsingNamespace("Microsoft.Extensions.DependencyInjection.Extensions");
-        AddUsingNamespace("ThabeSoft.Mediator");
-        AddUsingNamespace("ThabeSoft.Mediator.DependencyInjection");
+        var content = BuildContent(infos);
+        var source_text = TypeBuildExtensions.BuildDefaultTemplate(_usingNamespaces, _namespace, content);
+
+        context.AddSource(_fileName, source_text);
     }
 
-    protected override string BuildContentStatements(IReadOnlyCollection<TypeRegistration> infos)
+    private static string BuildContent(IReadOnlyCollection<TypeRegistration> infos)
     {
-        var statements = infos
-            .Where(x => x.Kind == TypeRegistrationKind.Handler)
+        var statements = infos.Where(x => x.Kind == TypeRegistrationKind.Handler)
             .Distinct()
-            .Select(GenerateRegisterStatements)
-            .Where(x => !string.IsNullOrEmpty(x));
+            .Select(GetPipeline)
+            .Where(x => !string.IsNullOrEmpty(x))
+            .ToArray();
 
-        var statements_code = string.Join(NewLine + NewLine, statements);
+        var statements_code = string.Join(TypeBuildExtensions.NewLine + TypeBuildExtensions.NewLine, statements);
         if (string.IsNullOrWhiteSpace(statements_code)) return string.Empty;
 
 
-        return """
+        return $$"""
     internal static partial class ThabeSoftMediatorDependencyInjectionExtensions
     {
-        public static void AddGeneratedMediator(this IServiceCollection services, Action<IDescriptorCollection>? optionAction = null)
+        // 配置中介者
+        public static void ConfiguredMediator(this IServiceCollection services, Action<IDescriptorCollection>? optionAction = null)
         {
             services.AddMediatorHandlers(optionAction);
             services.AddMediatorPipelineBehaviors(optionAction);
+
+{{statements_code}}
         }
     }
 """;
     }
 
-    // 生成处理器注册代码
-    private static string GenerateRegisterStatements(TypeRegistration info)
+    private static string GetPipeline(TypeRegistration info)
     {
-        if (info.HandlerKind == HandlerKind.RequestResponse && info.InputTypeSymbol is not null && info.OutputTypeSymbol is not null)
+        if (info.Kind == TypeRegistrationKind.Handler)
         {
+            var method_name = PipelineBehaviorDependencyInjectionBuilderV2.GetPipelineClassName(info);
             return $"""
-                // {info.ImplementationTypeSymbol}
-                x.AddRequestHandler<
-                    {info.ImplementationTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalFullName)},
-                    {info.InputTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalFullName)},
-                    {info.OutputTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalFullName)}>();
-""";
-        }
-        if (info.HandlerKind == HandlerKind.Request && info.InputTypeSymbol is not null)
-        {
-            return $"""
-                // {info.ImplementationTypeSymbol}
-                x.AddRequestHandler<
-                    {info.ImplementationTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalFullName)},
-                    {info.InputTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalFullName)}>();
-""";
-        }
-        if (info.HandlerKind == HandlerKind.Notification && info.InputTypeSymbol is not null)
-        {
-            return $"""
-                // {info.ImplementationTypeSymbol}
-                x.AddNotificationHandler<
-                    {info.ImplementationTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalFullName)},
-                    {info.InputTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalFullName)}>();
+            // {info.ServiceTypeSymbol}
+            services.Add{method_name}();
 """;
         }
 

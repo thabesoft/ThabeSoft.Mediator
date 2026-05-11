@@ -4,6 +4,8 @@ using Concordia;
 using DispatchR.Configuration;
 using DispatchR.Extensions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Perfolizer.Mathematics.Selectors;
 using ThabeSoft.Mediator.Benchmark.Generated;
 using ThabeSoft.Mediator.Benchmark.Handlers;
 using ThabeSoft.Mediator.Benchmark.Messages;
@@ -33,7 +35,7 @@ public class Benchmark
         // ThabeSoft
         var thabesoftServices = new ServiceCollection();
         thabesoftServices.AddMediator(ServiceLifetime.Singleton);
-        thabesoftServices.AddGeneratedMediator();
+        thabesoftServices.ConfiguredMediator(x => x.All().Singleton().Apply());
         _thabeSoftMediator = thabesoftServices.BuildServiceProvider().GetRequiredService<ThabeSoftMediator>();
 
 
@@ -45,7 +47,9 @@ public class Benchmark
             cfg.Lifetime = ServiceLifetime.Singleton;
             cfg.RegisterServicesFromAssembly(typeof(Benchmark).Assembly);
 
-            cfg.AddOpenBehavior(typeof(PipelineBehavior<,>));
+            cfg.AddOpenBehavior(typeof(PipelineBehavior1<,>));
+            cfg.AddOpenBehavior(typeof(PipelineBehavior2<,>));
+            cfg.AddOpenBehavior(typeof(PipelineBehavior3<,>));
         });
         _mediatorMediator = mediatRServices.BuildServiceProvider().GetRequiredService<MediatorMediator>();
 

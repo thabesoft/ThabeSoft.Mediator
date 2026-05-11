@@ -14,5 +14,5 @@ public enum DescriptorKind : byte
     /// <summary>
     /// 管道行为
     /// </summary>
-    Behavior,
+    PipelineBehavior,
 }

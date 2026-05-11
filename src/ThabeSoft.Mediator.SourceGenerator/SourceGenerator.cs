@@ -11,16 +11,17 @@ namespace ThabeSoft.Mediator.SourceGenerator;
 [Generator]
 public class SourceGenerator : IIncrementalGenerator
 {
-    private readonly CodeFileBuilderBase[] _codeFileBuilders;
+    private readonly ITypeSourceBuilder[] _builders;
 
     public SourceGenerator()
     {
-        _codeFileBuilders =
+        _builders =
         [
             new SenderExtensionsCodeFileBuilder(),
             new DependencyInjectionBuilder(),
             new HandlerDependencyInjectionBuilder(),
-            new PipelineBehaviorDependencyInjectionBuilder()
+            new PipelineBehaviorDependencyInjectionBuilder(),
+            new PipelineBehaviorDependencyInjectionBuilderV2()
         ];
     }
 
@@ -76,12 +77,6 @@ public class SourceGenerator : IIncrementalGenerator
         var valid_handlers = typeInfos.Distinct().ToList();
         if (valid_handlers.Count == 0) return;
 
-        foreach(var i in _codeFileBuilders)
-        {
-            var code_string = i.Build(typeInfos);
-            if(string.IsNullOrWhiteSpace(code_string)) continue;
-
-            context.AddSource(i.FileName, code_string);
-        }
+        foreach(var i in _builders) i.Build(context, typeInfos);
     }
 }

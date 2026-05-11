@@ -62,19 +62,19 @@ public sealed class DescriptorBuilder : IDescriptorBuilder
         where TBehavior : IRequestPipelineBehavior<TRequest>
         where TRequest : IRequest
     {
-        return new DescriptorBuilder(root, DescriptorKind.Behavior, typeof(IRequestPipelineBehavior<TRequest>), typeof(TBehavior), HandlerKind.Request, typeof(TRequest));
+        return new DescriptorBuilder(root, DescriptorKind.PipelineBehavior, typeof(IRequestPipelineBehavior<TRequest>), typeof(TBehavior), HandlerKind.Request, typeof(TRequest));
     }
     public static DescriptorBuilder RequestBehavior<TBehavior, TRequest, TResponse>(DescriptorCollection root)
         where TBehavior : IRequestPipelineBehavior<TRequest, TResponse>
         where TRequest : IRequest<TResponse>
     {
-        return new DescriptorBuilder(root, DescriptorKind.Behavior, typeof(IRequestPipelineBehavior<TRequest, TResponse>), typeof(TBehavior), HandlerKind.RequestResponse, typeof(TRequest), typeof(TResponse));
+        return new DescriptorBuilder(root, DescriptorKind.PipelineBehavior, typeof(IRequestPipelineBehavior<TRequest, TResponse>), typeof(TBehavior), HandlerKind.RequestResponse, typeof(TRequest), typeof(TResponse));
     }
     public static DescriptorBuilder NotificationBehavior<TBehavior, TNotification>(DescriptorCollection root)
         where TBehavior : INotificationPipelineBehavior<TNotification>
         where TNotification : INotification
     {
-        return new DescriptorBuilder(root, DescriptorKind.Behavior, typeof(INotificationPipelineBehavior<TNotification>), typeof(TBehavior), HandlerKind.Notification, typeof(TNotification));
+        return new DescriptorBuilder(root, DescriptorKind.PipelineBehavior, typeof(INotificationPipelineBehavior<TNotification>), typeof(TBehavior), HandlerKind.Notification, typeof(TNotification));
     }
 
 

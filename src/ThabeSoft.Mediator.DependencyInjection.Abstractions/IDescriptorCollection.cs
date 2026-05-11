@@ -208,9 +208,9 @@ public static class DescriptorCollectionExtensions
         /// <summary>
         /// 所有管道行为
         /// </summary>
-        public IDescriptorBatch Behavior()
+        public IDescriptorBatch PipelineBehavior()
         {
-            return collection.Batch(x => x.Kind == DescriptorKind.Behavior);
+            return collection.Batch(x => x.Kind == DescriptorKind.PipelineBehavior);
         }
     }
 }

@@ -7,24 +7,36 @@ namespace ThabeSoft.Mediator.SourceGenerator.Builders;
 /// <summary>
 /// 发送者扩展类
 /// </summary>
-public sealed class SenderExtensionsCodeFileBuilder : CodeFileBuilderBase
+public sealed class SenderExtensionsCodeFileBuilder : ITypeSourceBuilder
 {
-    public SenderExtensionsCodeFileBuilder() : base(
-        fileName: "SenderExtensions.g.cs",
-        @namespace: "ThabeSoft.Mediator")
+    private readonly string _fileName = "SenderExtensions.g.cs";
+
+    private const string _namespace = "ThabeSoft.Mediator";
+
+    private static readonly string[] _usingNamespaces =
+    [
+        "System.Threading",
+        "System.Threading.Tasks",
+    ];
+
+
+    public void Build(Microsoft.CodeAnalysis.SourceProductionContext context, IReadOnlyCollection<TypeRegistration> infos)
     {
-        AddUsingNamespace("System.Threading");
-        AddUsingNamespace("System.Threading.Tasks");
+        var content = BuildContent(infos);
+        var source_text = TypeBuildExtensions.BuildDefaultTemplate(_usingNamespaces, _namespace, content);
+
+        context.AddSource(_fileName, source_text);
     }
 
-    protected override string BuildContentStatements(IReadOnlyCollection<TypeRegistration> infos)
+
+    private string BuildContent(IReadOnlyCollection<TypeRegistration> infos)
     {
         var statements = infos
             .Where(x => x.Kind == TypeRegistrationKind.Handler)
             .Select(GenerateInjectionCode)
             .Where(x => !string.IsNullOrEmpty(x));
 
-        var statements_code = string.Join(NewLine + NewLine, statements);
+        var statements_code = string.Join(TypeBuildExtensions.NewLine + TypeBuildExtensions.NewLine, statements);
         if (string.IsNullOrWhiteSpace(statements_code)) return string.Empty;
 
 
@@ -38,18 +50,22 @@ public sealed class SenderExtensionsCodeFileBuilder : CodeFileBuilderBase
 
     private static string GenerateInjectionCode(TypeRegistration info)
     {
-        if (info.HandlerKind == HandlerKind.RequestResponse && info.InputTypeSymbol is not null && info.OutputTypeSymbol is not null)
+        var input_type_name = info.InputTypeSymbol?.ToDisplayString(TypeBuildExtensions.GlobalFullName);
+        var output_type_name = info.OutputTypeSymbol?.ToDisplayString(TypeBuildExtensions.GlobalFullName);
+
+
+        if (info.HandlerKind == HandlerKind.RequestResponse && input_type_name is not null && output_type_name is not null)
         {
             return $$"""
         // {{info.InputTypeSymbol}}
-        public static ValueTask<{{info.OutputTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalFullName)}}> SendAsync(
+        public static ValueTask<{{output_type_name}}> SendAsync(
             this ISender sender,
-            {{info.InputTypeSymbol}} request,
+            {{input_type_name}} request,
             CancellationToken cancellationToken = default)
         {
             return sender.SendAsync<
-                {{info.InputTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalFullName)}},
-                {{info.OutputTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalFullName)}}>
+                {{input_type_name}},
+                {{output_type_name}}>
                 (request, cancellationToken);
         }
 """;

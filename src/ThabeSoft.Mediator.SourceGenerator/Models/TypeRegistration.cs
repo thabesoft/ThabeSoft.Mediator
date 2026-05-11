@@ -35,7 +35,7 @@ public record class TypeRegistration
         if (type_args.Length < 1) return false;
 
 
-        var service_full_name = serviceTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalNonGenericFullName);
+        var service_full_name = serviceTypeSymbol.ToDisplayString(TypeBuildExtensions.GlobalNonGenericFullName);
 
         // IRequestHandler<TRequest>
         if (service_full_name == RequestHandlerServiceNonFullName && type_args.Length == 1)
@@ -155,7 +155,7 @@ public record class TypeRegistration
         if (!generic && type_args[0] is INamedTypeSymbol req) req_type_symbol = req;
 
         // 接口名称验证
-        var name = serviceTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalNonGenericFullName);
+        var name = serviceTypeSymbol.ToDisplayString(TypeBuildExtensions.GlobalNonGenericFullName);
         if (name != serviceNonGenericFullName) return false;
 
         handlerInfo = new TypeRegistration
@@ -192,7 +192,7 @@ public record class TypeRegistration
         if (!generic && type_args[1] is INamedTypeSymbol resp) resp_type_symbol = resp;
 
         // 接口名称验证
-        var name = serviceTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalNonGenericFullName);
+        var name = serviceTypeSymbol.ToDisplayString(TypeBuildExtensions.GlobalNonGenericFullName);
         if (name != serviceNonGenericFullName) return false;
 
         handlerInfo = new TypeRegistration
@@ -227,7 +227,7 @@ public record class TypeRegistration
         if (!generic && type_args[0] is INamedTypeSymbol notify) notify_type_symbol = notify;
 
         // 接口名称验证
-        var name = serviceTypeSymbol.ToDisplayString(TypeParserExtensiosn.GlobalNonGenericFullName);
+        var name = serviceTypeSymbol.ToDisplayString(TypeBuildExtensions.GlobalNonGenericFullName);
         if (name != serviceNonGenericFullName) return false;
 
         handlerInfo = new TypeRegistration

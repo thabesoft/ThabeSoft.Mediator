@@ -1,4 +1,6 @@
 ﻿using BenchmarkDotNet.Running;
+using Microsoft.Extensions.DependencyInjection;
+using ThabeSoft.Mediator;
 using ThabeSoft.Mediator.Benchmark;
 using ThabeSoft.Mediator.DependencyInjection;
 
@@ -12,5 +14,4 @@ benchmark.Setup();
 await benchmark.ThabeSoft();
 await benchmark.MediatR();
 await benchmark.Concordia();
-
 #endif

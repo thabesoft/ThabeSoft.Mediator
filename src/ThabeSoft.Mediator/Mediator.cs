@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System.Collections;
 
 namespace ThabeSoft.Mediator;
 
@@ -28,14 +27,18 @@ public sealed class Mediator(IServiceProvider services) : IMediator
     {
         if (request is null) throw new ArgumentNullException(nameof(request), "请求不可为空");
 
-        var handler = services.GetRequiredService<IRequestHandler<TRequest, TResponse>>();
-        var behaviors = TryGetServices<IRequestPipelineBehavior<TRequest, TResponse>>();
+        // 获取管道
+        var pipeline = services.GetRequiredService<IRequestPipeline<TRequest, TResponse>>();
+        return pipeline.InvokeAsync(request, cancellationToken);
 
-        // 没有行为
-        if (behaviors.Length == 0) return handler.HandleAsync(request, cancellationToken);
+        //var handler = services.GetRequiredService<IRequestHandler<TRequest, TResponse>>();
+        //var behaviors = TryGetServices<IRequestPipelineBehavior<TRequest, TResponse>>();
 
-        var pipe_line = new RequestPipeline<TRequest, TResponse>(request, handler, behaviors);
-        return pipe_line.InvokeAsync(cancellationToken);
+        //// 没有行为
+        //if (behaviors.Length == 0) return handler.HandleAsync(request, cancellationToken);
+
+        //var pipe_line = new RequestPipeline<TRequest, TResponse>(request, handler, behaviors);
+        //return pipe_line.InvokeAsync(cancellationToken);
     }
 
     public ValueTask PublishAsync<TNotification>(TNotification notification, CancellationToken cancellationToken = default)

@@ -1,22 +1,18 @@
-﻿namespace ThabeSoft.Mediator;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System.Runtime.InteropServices;
+
+namespace ThabeSoft.Mediator;
 
 
 /// <summary>
 /// 请求管道
 /// </summary>
-/// <typeparam name="TRequest"></typeparam>
-/// <param name="request"></param>
-/// <param name="handler"></param>
-/// <param name="behaviors"></param>
-internal struct RequestPipeline<TRequest>(
+internal class RequestPipeline<TRequest>(
         TRequest request,
         IRequestHandler<TRequest> handler,
         IRequestPipelineBehavior<TRequest>[] behaviors
     ) where TRequest : IRequest
 {
-    // 当前执行行为索引
-    private int _index;
-
     public ValueTask InvokeAsync(CancellationToken cancellationToken)
     {
         return MoveNext(cancellationToken);
@@ -24,30 +20,33 @@ internal struct RequestPipeline<TRequest>(
 
     private ValueTask MoveNext(CancellationToken cancellationToken)
     {
-        if (_index >= behaviors.Length) return handler.HandleAsync(request, cancellationToken);
+        HandlerDelegate next = (ct) => handler.HandleAsync(request, ct);
+        for (int i = behaviors.Length - 1; i >= 0; i--)
+        {
+            var behavior = behaviors[i];
+            var currentNext = next;
+            next = (c) => behavior.InvokeAsync(request, currentNext, c);  // 只分配一次
+        }
 
-        var behavior = behaviors[_index++];
-        return behavior.InvokeAsync(request, MoveNext, cancellationToken);
+        return next(cancellationToken);
+
+
+        //if (_index >= behaviors.Length) return handler.HandleAsync(request, cancellationToken);
+
+        //var behavior = behaviors[_index++];
+        //return behavior.InvokeAsync(request, MoveNext, cancellationToken);
     }
 }
 
 /// <summary>
 /// 请求管道
 /// </summary>
-/// <typeparam name="TRequest"></typeparam>
-/// <typeparam name="TResponse"></typeparam>
-/// <param name="request"></param>
-/// <param name="handler"></param>
-/// <param name="behaviors"></param>
-internal struct RequestPipeline<TRequest, TResponse>(
+internal class RequestPipeline<TRequest, TResponse>(
         TRequest request,
         IRequestHandler<TRequest, TResponse> handler,
         IRequestPipelineBehavior<TRequest, TResponse>[] behaviors
     ) where TRequest : IRequest<TResponse>
 {
-    // 当前执行行为索引
-    private int _index;
-
     public ValueTask<TResponse> InvokeAsync(CancellationToken cancellationToken)
     {
         return MoveNext(cancellationToken);
@@ -55,9 +54,20 @@ internal struct RequestPipeline<TRequest, TResponse>(
 
     private ValueTask<TResponse> MoveNext(CancellationToken cancellationToken)
     {
-        if (_index >= behaviors.Length) return handler.HandleAsync(request, cancellationToken);
+        HandlerDelegate<TResponse> next = (ct) => handler.HandleAsync(request, ct);
+        for (int i = behaviors.Length - 1; i >= 0; i--)
+        {
+            var behavior = behaviors[i];
+            var currentNext = next;
+            next = (c) => behavior.InvokeAsync(request, currentNext, c);  // 只分配一次
+        }
 
-        var behavior = behaviors[_index++];
-        return behavior.InvokeAsync(request, MoveNext, cancellationToken);
+        return next(cancellationToken);
+
+
+        //if (_index >= behaviors.Length) return handler.HandleAsync(request, cancellationToken);
+
+        //var behavior = behaviors[_index++];
+        //return behavior.InvokeAsync(request, MoveNext, cancellationToken);
     }
 }

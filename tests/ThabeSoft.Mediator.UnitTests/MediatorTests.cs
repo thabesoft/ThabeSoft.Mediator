@@ -27,7 +27,7 @@ public class MediatorTests
             x.AddNotificationHandler<NotificationHandler, Notification>();
         });
         services.ConfigureMediator(x => x.AddNotificationBehavior<NotificationPipelineBehavior, Notification>());
-        services.ConfigureMediator(x => x.Behavior().Except());
+        services.ConfigureMediator(x => x.PipelineBehavior().Except());
 
         var mockHandler = new Mock<IRequestHandler<RequestResponse, Response>>();
         var expectedResponse = new Response(123);

@@ -3,10 +3,6 @@
 /// <summary>
 /// 通知管道
 /// </summary>
-/// <typeparam name="TNotification"></typeparam>
-/// <param name="notification"></param>
-/// <param name="handler"></param>
-/// <param name="behaviors"></param>
 internal struct NotifyPipeline<TNotification>(
         TNotification notification,
         INotificationHandler<TNotification> handler,

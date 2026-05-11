@@ -33,7 +33,6 @@ public static class DependencyInjectionExtensions
             optionsAction?.Invoke(options);
             options.SyncToServiceCollection(services);
 
-
             return services;
         }
 
