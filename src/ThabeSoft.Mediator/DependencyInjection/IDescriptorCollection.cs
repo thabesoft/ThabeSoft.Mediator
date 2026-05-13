@@ -134,6 +134,7 @@ public static class DescriptorCollectionExtensions
             return collection.WithLifetime(LifetimeKind.None);
         }
 
+
         /// <summary>
         /// 所有的
         /// </summary>
@@ -141,6 +142,21 @@ public static class DescriptorCollectionExtensions
         {
             return collection.Batch(_ => true);
         }
+        /// <summary>
+        /// 所有处理器
+        /// </summary>
+        public IDescriptorBatch Handler()
+        {
+            return collection.Batch(x => x.Kind == DescriptorKind.Handler);
+        }
+        /// <summary>
+        /// 所有管道行为
+        /// </summary>
+        public IDescriptorBatch PipelineBehavior()
+        {
+            return collection.Batch(x => x.Kind == DescriptorKind.PipelineBehavior);
+        }
+
 
         /// <summary>
         /// 查询该请求的所有处理器
@@ -151,17 +167,15 @@ public static class DescriptorCollectionExtensions
             var service_type = typeof(IRequestHandler<TRequest>);
             return collection.Batch(x => x.ServiceType == service_type);
         }
-
         /// <summary>
         /// 查询该请求的所有处理器
         /// </summary>
-        public IDescriptorBatch RequestHandler<TRequest, TResult>()
-            where TRequest : IRequest<TResult>
+        public IDescriptorBatch RequestHandler<TRequest, TResponse>()
+            where TRequest : IRequest<TResponse>
         {
-            var service_type = typeof(IRequestHandler<TRequest, TResult>);
+            var service_type = typeof(IRequestHandler<TRequest, TResponse>);
             return collection.Batch(x => x.ServiceType == service_type);
         }
-
         /// <summary>
         /// 查询该通知的所有处理器
         /// </summary>
@@ -171,7 +185,6 @@ public static class DescriptorCollectionExtensions
             var service_type = typeof(INotificationHandler<TNotification>);
             return collection.Batch(x => x.ServiceType == service_type);
         }
-
 
 
         /// <summary>
@@ -188,29 +201,12 @@ public static class DescriptorCollectionExtensions
                 return collection.Batch(x => x.HandlerKind == HandlerKind.Request);
             }
         }
-
         /// <summary>
         /// 所有通知处理器
         /// </summary>
         public IDescriptorBatch NotificationHandler()
         {
             return collection.Batch(x => x.HandlerKind == HandlerKind.Notification);
-        }
-
-        /// <summary>
-        /// 所有处理器
-        /// </summary>
-        public IDescriptorBatch Handler()
-        {
-            return collection.Batch(x => x.Kind == DescriptorKind.Handler);
-        }
-
-        /// <summary>
-        /// 所有管道行为
-        /// </summary>
-        public IDescriptorBatch PipelineBehavior()
-        {
-            return collection.Batch(x => x.Kind == DescriptorKind.PipelineBehavior);
         }
     }
 }
