@@ -10,13 +10,13 @@ internal class PipelineDependencyInjectionBuilder : ITypeSourceBuilder
 {
     private static readonly string[] _usingNamespaces =
     [
-       "Microsoft.Extensions.DependencyInjection",
+        "Microsoft.Extensions.DependencyInjection",
         "Microsoft.Extensions.DependencyInjection.Extensions",
         "ThabeSoft.Mediator",
         "ThabeSoft.Mediator.DependencyInjection",
     ];
 
-    private const string _namespace = "ThabeSoft.Mediator.Generated";
+    private const string _namespace = "Microsoft.Extensions.DependencyInjection";
 
     // 获取管道类名称
     public static string GetPipelineClassName(TypeRegistration info)
@@ -55,6 +55,8 @@ internal class PipelineDependencyInjectionBuilder : ITypeSourceBuilder
             if (handler.HandlerKind == HandlerKind.RequestResponse)
             {
                 var behaviors = infos.Where(x => x.Kind == TypeRegistrationKind.PipelineBehavior && x.HandlerKind == HandlerKind.RequestResponse).ToArray();
+                if (behaviors.Length <= 0) continue;
+
                 var content = GetRequestResponseContent(className, handler, behaviors);
                 var source_text = TypeBuildExtensions.BuildDefaultTemplate(_usingNamespaces, _namespace, content);
 

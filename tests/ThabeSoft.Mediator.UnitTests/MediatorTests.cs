@@ -44,10 +44,11 @@ public class MediatorTests
         var mediator = new Mediator(serviceProvider.Object);
         var request = new RequestResponse(123);
 
-        var response = await mediator.SendAsync<RequestResponse, Response>(request, TestContext.CancellationToken);
+        var response1 = await mediator.SendAsync<RequestResponse, Response>(request, TestContext.CancellationToken);
+        var response2 = await mediator.SendUntypedAsync(request, TestContext.CancellationToken);
 
-        Assert.AreEqual(expectedResponse.PingId, response.PingId);
-        mockHandler.Verify(x => x.HandleAsync(request, It.IsAny<CancellationToken>()), Times.Once);
+        Assert.AreEqual(expectedResponse.PingId, response1.PingId);
+        mockHandler.Verify(x => x.HandleAsync(request, It.IsAny<CancellationToken>()), Times.Exactly(2));
     }
 
     [TestMethod(DisplayName = "请求-响应-取消令牌")]
@@ -126,8 +127,9 @@ public class MediatorTests
         var request = new Request();
 
         await mediator.SendAsync(request, TestContext.CancellationToken);
+        await mediator.SendUntypedAsync(request, TestContext.CancellationToken);
 
-        mockHandler.Verify(x => x.HandleAsync(request, It.IsAny<CancellationToken>()), Times.Once);
+        mockHandler.Verify(x => x.HandleAsync(request, It.IsAny<CancellationToken>()), Times.Exactly(2));
     }
 
     [TestMethod(DisplayName = "请求-null参数")]
@@ -136,7 +138,7 @@ public class MediatorTests
         var mediator = new Mediator(Mock.Of<IServiceProvider>());
 
         await Assert.ThrowsAsync<ArgumentNullException>(
-            async () => await mediator.SendAsync<Request>(null!, TestContext.CancellationToken)
+            async () => await mediator.SendUntypedAsync(null!, TestContext.CancellationToken)
         );
     }
 
@@ -196,16 +198,15 @@ public class MediatorTests
             .Setup(x => x.GetService(typeof(IEnumerable<INotificationHandler<Notification>>)))
             .Returns(new INotificationHandler<Notification>[] { mockHandler1.Object, mockHandler2.Object });
 
-        
         var mediator = new Mediator(serviceProvider.Object);
         var notification = new Notification();
 
-        
         await mediator.PublishAsync(notification, TestContext.CancellationToken);
+        await mediator.PublishUntypedAsync(notification, TestContext.CancellationToken);
 
 
-        mockHandler1.Verify(x => x.HandleAsync(notification, It.IsAny<CancellationToken>()), Times.Once);
-        mockHandler2.Verify(x => x.HandleAsync(notification, It.IsAny<CancellationToken>()), Times.Once);
+        mockHandler1.Verify(x => x.HandleAsync(notification, It.IsAny<CancellationToken>()), Times.Exactly(2));
+        mockHandler2.Verify(x => x.HandleAsync(notification, It.IsAny<CancellationToken>()), Times.Exactly(2));
     }
 
     [TestMethod(DisplayName = "通知-null参数")]

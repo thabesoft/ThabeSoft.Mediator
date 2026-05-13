@@ -162,23 +162,21 @@ public sealed class ScopeMediator(IServiceScope scope) : IMediator, IDisposable
 {
     private readonly IMediator _mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
-    public ValueTask PublishAsync<TNotification>(TNotification notification, CancellationToken cancellationToken)
-        where TNotification : INotification
+    public ValueTask SendAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
+        where TRequest : IRequest
     {
-        return _mediator.PublishAsync(notification, cancellationToken);
+        return _mediator.SendAsync(request, cancellationToken);
     }
-
     public ValueTask<TResponse> SendAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken)
         where TRequest : IRequest<TResponse>
     {
         return _mediator.SendAsync<TRequest, TResponse>(request, cancellationToken);
     }
-    public ValueTask SendAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
-        where TRequest : IRequest
+    public ValueTask PublishAsync<TNotification>(TNotification notification, CancellationToken cancellationToken)
+        where TNotification : INotification
     {
-        return _mediator.SendAsync<TRequest>(request, cancellationToken);
+        return _mediator.PublishAsync(notification, cancellationToken);
     }
-
 
     public void Dispose()
     {

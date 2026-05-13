@@ -42,7 +42,14 @@ public static class DependencyInjectionExtensions
         public IServiceCollection AddMediator<TMediator>(ServiceLifetime lifetime)
             where TMediator : class, IMediator
         {
-            services.TryAddEnumerable(new ServiceDescriptor(typeof(IMediator), typeof(Mediator), lifetime));
+            var key = typeof(TMediator);
+
+            services.RemoveAll<IMediator>();
+            services.RemoveAll<ISender>();
+            services.RemoveAll<IPublisher>();
+
+
+            services.Add(new ServiceDescriptor(typeof(IMediator), typeof(Mediator), lifetime));
             services.Add(new ServiceDescriptor(typeof(ISender), sp => sp.GetRequiredService<IMediator>(), lifetime));
             services.Add(new ServiceDescriptor(typeof(IPublisher), sp => sp.GetRequiredService<IMediator>(), lifetime));
 
@@ -55,6 +62,22 @@ public static class DependencyInjectionExtensions
         public IServiceCollection AddMediator(ServiceLifetime lifetime)
         {
             return services.AddMediator<Mediator>(lifetime);
+        }
+
+
+        /// <summary>
+        /// 删除所有业务和实现类型匹配的
+        /// </summary>
+        private void RemoveAll<TService, TImplementation>()
+        {
+            var service_type = typeof(TService);
+            var implementation_type = typeof(TImplementation);
+            var remove_items = services.Where(x => x.ServiceType == service_type && x.ImplementationType == implementation_type);
+
+            foreach (var descriptor in remove_items.ToArray())
+            {
+                services.Remove(descriptor);
+            }
         }
     }
 }

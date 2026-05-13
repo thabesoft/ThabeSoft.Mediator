@@ -12,7 +12,7 @@ public record class TypeRegistration
     #region --工厂方法--
 
     public const string RequestHandlerServiceNonFullName = "global::ThabeSoft.Mediator.IRequestHandler";
-    public const string NoficationServiceNonFullName = "global::ThabeSoft.Mediator.INoficationHandler";
+    public const string NoficationServiceNonFullName = "global::ThabeSoft.Mediator.INotificationHandler";
     public const string RequestPipelineBehaviorServiceNonGenericFullName = "global::ThabeSoft.Mediator.IRequestPipelineBehavior";
     public const string NotificationPipelineBehaviorServiceNonGenericFullName = "global::ThabeSoft.Mediator.INotificationPipelineBehavior";
     public const string IgnoreAttributeFullName = "global::ThabeSoft.Mediator.IgnoreAttribute";

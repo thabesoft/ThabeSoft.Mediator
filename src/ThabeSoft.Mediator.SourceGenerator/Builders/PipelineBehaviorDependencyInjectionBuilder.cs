@@ -50,7 +50,7 @@ internal class PipelineBehaviorDependencyInjectionBuilder : ITypeSourceBuilder
         return $$"""
     internal static partial class ThabeSoftMediatorDependencyInjectionExtensions
     {
-        private static void AddMediatorPipelineBehaviors(this IServiceCollection services, Action<IDescriptorCollection>? optionAction = null)
+        private static void AddMediatorPipelineBehaviors(this IServiceCollection services)
         {
             services.ConfigureMediator(x =>
             {

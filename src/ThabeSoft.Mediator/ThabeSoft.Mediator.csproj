@@ -18,7 +18,7 @@
 		<!-- 基础信息 -->
 		<Company>ThabeSoft</Company>
 		<Product>Mediator</Product>
-		<Version>1.0.0</Version>
+		<Version>0.1.7</Version>
 
 		<!-- NuGet 包信息 -->
 		<Title>ThabeSoft.Mediator</Title>

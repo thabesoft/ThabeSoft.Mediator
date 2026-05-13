@@ -19,7 +19,6 @@ public sealed class DependencyInjectionBuilder : ITypeSourceBuilder
         "Microsoft.Extensions.DependencyInjection.Extensions",
         "ThabeSoft.Mediator",
         "ThabeSoft.Mediator.DependencyInjection",
-        "ThabeSoft.Mediator.Generated",
     ];
 
 
@@ -33,8 +32,12 @@ public sealed class DependencyInjectionBuilder : ITypeSourceBuilder
 
     private static string BuildContent(IReadOnlyCollection<TypeRegistration> infos)
     {
-        var statements = GetPipelines(infos).Where(x => !string.IsNullOrWhiteSpace(x));
-        var statements_code = string.Join(TypeBuildExtensions.NewLine + TypeBuildExtensions.NewLine, statements);
+
+        var handler_code = AddMediatorHandlers(infos);
+        var pipeline_behavior_code = AddPipelineBehaviors(infos);
+
+        var pipelin_codes = AddPipeline(infos).Where(x => !string.IsNullOrWhiteSpace(x));
+        var pipelin_code = string.Join(TypeBuildExtensions.NewLine + TypeBuildExtensions.NewLine, pipelin_codes);
 
         return $$"""
     internal static partial class ThabeSoftMediatorDependencyInjectionExtensions
@@ -42,20 +45,41 @@ public sealed class DependencyInjectionBuilder : ITypeSourceBuilder
         // 添加中介者
         public static void AddMediator(this IServiceCollection services, Action<IDescriptorCollection>? optionAction = null, ServiceLifetime mediatorLifetime = ServiceLifetime.Scoped)
         {
-            // 中介者
+            // 添加中介者并设置生命周期
             services.AddMediator(mediatorLifetime);
-            // 处理器
-            services.AddMediatorHandlers(optionAction);
-            // 管道行为
-            services.AddMediatorPipelineBehaviors(optionAction);
 
-{{statements_code}}
+{{handler_code}}
+            
+{{pipeline_behavior_code}}
+
+{{pipelin_code}}
+
+            // 配置
+            if (optionAction is not null)  services.ConfigureMediator(optionAction);
         }
     }
 """;
     }
 
-    private static IEnumerable<string> GetPipelines(IReadOnlyCollection<TypeRegistration> infos)
+    private static string AddMediatorHandlers(IReadOnlyCollection<TypeRegistration> infos)
+    {
+        if (infos.Count(x => x.Kind == TypeRegistrationKind.Handler) <= 0) return string.Empty;
+        return """
+            // 处理器
+            services.AddMediatorHandlers();
+""";
+    }
+
+    private static string AddPipelineBehaviors(IReadOnlyCollection<TypeRegistration> infos)
+    {
+        if (infos.Count(x => x.Kind == TypeRegistrationKind.PipelineBehavior) <= 0) return string.Empty;
+        return """
+            // 管道行为
+            services.AddMediatorPipelineBehaviors();
+""";
+    }
+
+    private static IEnumerable<string> AddPipeline(IReadOnlyCollection<TypeRegistration> infos)
     {
         foreach (var handler in infos.Distinct().Where(x => x.Kind == TypeRegistrationKind.Handler).ToArray())
         {

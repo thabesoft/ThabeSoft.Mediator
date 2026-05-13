@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace ThabeSoft.Mediator.DependencyInjection;
 
@@ -91,14 +90,14 @@ public sealed class DescriptorCollection(ServiceLifetime defaultLifeTime = Servi
         var works = _descriptors.ToList();
 
         // 需要删除的
-        var removing_builders = works.FindAll(x => _filters.Any(f => f.Invoke(x)));
+        var removing_builders = works.FindAll(x => _filters.Any(f => f.Invoke(x))).ToArray();
         // 删除业务
         foreach (var item in removing_builders.SelectMany(x => FindAll(x))) descriptors.Remove(item);
         foreach (var item in removing_builders) works.Remove(item);
 
         // 需要改变的业务
-        var change_builders = _changes.SelectMany(change => works.Where(x => change.Matcher(x)));
-        var changes = change_builders.SelectMany(builder => FindAll(builder).Select(removed => (builder, removed)));
+        var change_builders = _changes.SelectMany(change => works.Where(x => change.Matcher(x))).ToArray();
+        var changes = change_builders.SelectMany(builder => FindAll(builder).Select(removed => (builder, removed))).ToArray();
 
         foreach (var (builder, removed) in changes)
         {

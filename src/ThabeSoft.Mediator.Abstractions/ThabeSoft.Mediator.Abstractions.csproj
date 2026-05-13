@@ -14,7 +14,7 @@
 		<!-- 基础信息 -->
 		<Company>ThabeSoft</Company>
 		<Product>ThabeSoft.Mediator</Product>
-		<Version>1.0.0</Version>
+		<Version>1.0.1</Version>
 
 		<!-- NuGet 包信息 -->
 		<Title>ThabeSoft.Mediator.Abstractions</Title>

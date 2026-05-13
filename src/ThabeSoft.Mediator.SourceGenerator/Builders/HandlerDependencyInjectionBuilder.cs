@@ -44,7 +44,7 @@ public sealed class HandlerDependencyInjectionBuilder : ITypeSourceBuilder
         return $$"""
     internal static partial class ThabeSoftMediatorDependencyInjectionExtensions
     {
-        private static void AddMediatorHandlers(this IServiceCollection services, Action<IDescriptorCollection>? optionAction = null)
+        private static void AddMediatorHandlers(this IServiceCollection services)
         {
             services.ConfigureMediator(x =>
             {

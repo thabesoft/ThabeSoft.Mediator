@@ -1,18 +1,12 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
 using Concordia;
-using DispatchR.Configuration;
-using DispatchR.Extensions;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Perfolizer.Mathematics.Selectors;
 using ThabeSoft.Mediator.Benchmark.Generated;
-using ThabeSoft.Mediator.Benchmark.Handlers;
 using ThabeSoft.Mediator.Benchmark.Messages;
 using ThabeSoft.Mediator.Benchmark.PipelineBehaviors;
 using ThabeSoft.Mediator.DependencyInjection;
 using ConcordiaMediator = Concordia.IMediator;
-using DispatchRMediator = DispatchR.IMediator;
 using MediatorMediator = MediatR.IMediator;
 using ThabeSoftMediator = ThabeSoft.Mediator.IMediator;
 
@@ -63,6 +57,10 @@ public class Benchmark
     [Benchmark(Baseline = true)]
     public ValueTask<PongResponse> ThabeSoft()
         => _thabeSoftMediator.SendAsync(new PingRequest());
+
+    [Benchmark]
+    public ValueTask<PongResponse> ThabeSofUntyped()
+        => _thabeSoftMediator.SendUntypedAsync(new PingRequest());
 
     [Benchmark]
     public Task<PongResponse> MediatR()
