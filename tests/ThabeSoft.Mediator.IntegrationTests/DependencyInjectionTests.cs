@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using ThabeSoft.Mediator.DependencyInjection;
 
 namespace ThabeSoft.Mediator.IntegrationTests;
 
@@ -14,13 +13,9 @@ public class DependencyInjectionTests
         services.AddMediator();
         services.ConfigureMediator(x => x.Default(ServiceLifetime.Singleton));
 
-        services.AddMediator(x =>
-        {
-            x.RequestHandler().Singleton();
-            x.RequestHandler<TReuqest>().Except();
-        });
-
         var sp = services.BuildServiceProvider();
         Assert.IsNotNull(sp.GetService<IMediator>());
+        Assert.IsNotNull(sp.GetService<ISender>());
+        Assert.IsNotNull(sp.GetService<IPublisher>());
     }
 }
