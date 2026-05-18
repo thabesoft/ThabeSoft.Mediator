@@ -16,8 +16,8 @@
 
 		<!--基础-->
 		<PackageId>ThabeSoft.Mediator.Abstractions</PackageId>
-		<Version>0.1.0-alpha.1</Version>
-		<Title>ThabeSoft.Mediator</Title>
+		<Version>0.1.0-alpha.2</Version>
+		<Title>ThabeSoft.Mediator.Abstractions</Title>
 
 		<!--描述-->
 		<PackageReadmeFile>README.md</PackageReadmeFile>
