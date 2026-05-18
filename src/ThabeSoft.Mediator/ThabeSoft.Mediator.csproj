@@ -1,63 +1,47 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
+		<TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
 		<LangVersion>preview</LangVersion>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		
-
-		<EnableNETAnalyzers>true</EnableNETAnalyzers>
-		<AnalysisLevel>latest</AnalysisLevel>
 	</PropertyGroup>
 
 	<!--包信息-->
 	<PropertyGroup>
+
+		<!--生成-->
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-
-		<!-- 基础信息 -->
-		<Company>ThabeSoft</Company>
-		<Product>Mediator</Product>
-		<Version>0.1.9</Version>
-
-		<!-- NuGet 包信息 -->
-		<Title>ThabeSoft.Mediator</Title>
-		<Description>一个基于源生成器的中介者模式实现</Description>
-		<Authors>DaThabe</Authors>
-		<PackageTags>mediator;cqs;abstractions;source-generator</PackageTags>
-
-		<!-- 链接 -->
-		<PackageProjectUrl>https://github.com/thabesoft/ThabeSoft.Mediator</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/thabesoft/ThabeSoft.Mediator</RepositoryUrl>
-		<RepositoryType>git</RepositoryType>
-
-		<!-- 法律 -->
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<Copyright>Copyright © ThabeSoft 2026</Copyright>
-
-		<!-- 文档 -->
-		<!--<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageIcon>icon.png</PackageIcon>-->
-
-		<!-- 调试 -->
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 
-		<!-- 分析器 -->
-		
+		<!--基础-->
+		<PackageId>ThabeSoft.Mediator</PackageId>
+		<Version>0.1.0-alpha.1</Version>
+		<Title>ThabeSoft.Mediator</Title>
+
+		<!--描述-->
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<Description>一个基于源生成器的中介者实现</Description>
+		<PackageTags>mediator;cqs;abstractions;中介者</PackageTags>
+
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="11.0.0-preview.4.26230.115" />
+		<None Include="README.md" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.8" />
+	</ItemGroup>
+
+	<!--嵌入源生成器-->
 	<ItemGroup>
 		<None Include="..\ThabeSoft.Mediator.SourceGenerator\bin\$(Configuration)\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/roslyn4.0/cs" Visible="false" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\ThabeSoft.Mediator.Abstractions\ThabeSoft.Mediator.Abstractions.csproj" />
+		<ProjectReference Include="..\ThabeSoft.Mediator.Abstractions\ThabeSoft.Mediator.Abstractions.csproj" />
 	</ItemGroup>
 
 </Project>

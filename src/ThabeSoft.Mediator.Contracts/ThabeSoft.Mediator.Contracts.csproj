@@ -8,44 +8,24 @@
 
 	<!--包信息-->
 	<PropertyGroup>
-		<!-- 基础信息 -->
-		<Company>ThabeSoft</Company>
-		<Product>Mediator.Contracts</Product>
-		<Version>1.0.0</Version>
 
-		<!-- NuGet 包信息 -->
-		<Title>ThabeSoft.Mediator.Abstractions</Title>
-		<Description>中介者协议，包含 IRequest、INotification。</Description>
-		<Authors>DaThabe</Authors>
-		<PackageTags>mediator;cqs;abstractions;source-generator</PackageTags>
-
-		<!-- 链接 -->
-		<PackageProjectUrl>https://github.com/thabesoft/ThabeSoft.Mediator</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/thabesoft/ThabeSoft.Mediator</RepositoryUrl>
-		<RepositoryType>git</RepositoryType>
-
-		<!-- 法律 -->
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<Copyright>Copyright © ThabeSoft 2026</Copyright>
-
-		<!-- 文档 -->
-		<!--<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageIcon>icon.png</PackageIcon>-->
-
-		<!-- 调试 -->
-		<IncludeSymbols>true</IncludeSymbols>
-		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-
-		<!-- 兼容性 -->
-		<TargetFrameworks>netstandard2.0;net8.0;net10.0</TargetFrameworks>
-		<LangVersion>latest</LangVersion>
-		<Nullable>enable</Nullable>
-
-		<!-- 分析器 -->
-		<EnableNETAnalyzers>true</EnableNETAnalyzers>
-		<AnalysisLevel>latest</AnalysisLevel>
+		<!--生成-->
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+
+		<!--基础-->
+		<PackageId>ThabeSoft.Mediator.Contracts</PackageId>
+		<Version>0.1.0-alpha.1</Version>
+		<Title>ThabeSoft.Mediator.Contracts</Title>
+
+		<!--描述-->
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<Description>中介者协议，包含 IRequest、INotification</Description>
+		<PackageTags>mediator;cqs;abstractions;中介者</PackageTags>
+
 	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
 
 </Project>

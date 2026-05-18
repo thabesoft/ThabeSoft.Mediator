@@ -1,62 +1,42 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
+		<TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
 		<RootNamespace>ThabeSoft.Mediator</RootNamespace>
 		<LangVersion>preview</LangVersion>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	</PropertyGroup>
 
 	<!--包信息-->
 	<PropertyGroup>
-		<!-- 基础信息 -->
-		<Company>ThabeSoft</Company>
-		<Product>ThabeSoft.Mediator</Product>
-		<Version>1.0.1</Version>
 
-		<!-- NuGet 包信息 -->
-		<Title>ThabeSoft.Mediator.Abstractions</Title>
-		<Description>中介者模式的抽象接口定义，包含 IRequest、IRequestHandler、INotification 等核心接口。</Description>
-		<Authors>DaThabe</Authors>
-		<PackageTags>mediator;cqs;abstractions;source-generator</PackageTags>
+		<!--生成-->
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 
-		<!-- 链接 -->
-		<PackageProjectUrl>https://github.com/thabesoft/ThabeSoft.Mediator</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/thabesoft/ThabeSoft.Mediator</RepositoryUrl>
-		<RepositoryType>git</RepositoryType>
+		<!--基础-->
+		<PackageId>ThabeSoft.Mediator.Abstractions</PackageId>
+		<Version>0.1.0-alpha.1</Version>
+		<Title>ThabeSoft.Mediator</Title>
 
-		<!-- 法律 -->
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<Copyright>Copyright © ThabeSoft 2026</Copyright>
-
-		<!-- 文档 -->
-		<!--<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<!--描述-->
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageIcon>icon.png</PackageIcon>-->
+		<Description>中介者模式的抽象接口定义，包含 IRequestHandler、INotificationHandler、IRequestPipelineBehavior 等</Description>
+		<PackageTags>mediator;cqs;abstractions;中介者</PackageTags>
 
-		<!-- 调试 -->
-		<IncludeSymbols>true</IncludeSymbols>
-		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-
-		<!-- 兼容性 -->
-		<TargetFrameworks>netstandard2.0;net8.0;net10.0</TargetFrameworks>
-		<LangVersion>latest</LangVersion>
-		<Nullable>enable</Nullable>
-
-		<!-- 分析器 -->
-		<EnableNETAnalyzers>true</EnableNETAnalyzers>
-		<AnalysisLevel>latest</AnalysisLevel>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
 
 	<!-- 为不原生支持 ValueTask 的框架引入 NuGet 包 -->
 	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0' ">
 		<PackageReference Include="System.Threading.Tasks.Extensions" Version="4.6.3" />
 	</ItemGroup>
-	
+
 	<ItemGroup>
-	  <ProjectReference Include="..\ThabeSoft.Mediator.Contracts\ThabeSoft.Mediator.Contracts.csproj" />
+		<ProjectReference Include="..\ThabeSoft.Mediator.Contracts\ThabeSoft.Mediator.Contracts.csproj" />
 	</ItemGroup>
 
 </Project>

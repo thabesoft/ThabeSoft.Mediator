@@ -3,7 +3,6 @@
 /// <summary>
 /// 请求管道行为
 /// </summary>
-/// <typeparam name="TRequest">请求</typeparam>
 public interface IRequestPipelineBehavior<TRequest>
     where TRequest : IRequest
 {
@@ -16,8 +15,6 @@ public interface IRequestPipelineBehavior<TRequest>
 /// <summary>
 /// 请求管道行为
 /// </summary>
-/// <typeparam name="TRequest">请求</typeparam>
-/// <typeparam name="TResponse">响应</typeparam>
 public interface IRequestPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
 {
